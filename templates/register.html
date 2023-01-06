@@ -1,0 +1,31 @@
+{% extends "/base" %}
+{% block title %}
+Register
+{% endblock title %}
+{% block head %}
+{{ super()}}
+{% endblock head %}
+{% block content %}
+<div style="margin: 0 auto; width: 40%;">
+    <form action="/register" method="post">
+        <label for="username">Username (starts with a letter, then numbers/letters):</label>
+        <input type="text" name="username" placeholder="Username" pattern="[A-Za-z][A-Za-z0-9]*" />
+        <!--<span class="validity">Username must start with a letter, then contain any number of additional letters and
+            numbers.</span>-->
+        <br>
+        <label for="email">Email:</label>
+        <input type="text" name="email" placeholder="Email" />
+        <!--<span class="validity">Email must be a valid email address.</span>-->
+        <br>
+        <label for="password">Password (at least 12 characters):</label>
+        <input type="password" name="password" placeholder="Password" pattern="[\w`~!@#$%^&*()-+={}\[\];:,.?]{12,}" />
+        <!--<span class="validity">Password must contain at least 12 characters from alphabetical, numbers, and the symbols
+            <code>`~!@#$%^&*()-=+{}[];:,.?</code>.</span>-->
+        <br>
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" name="confirm_password" placeholder="Confirm Password" />
+        <br>
+        <input type="submit" value="Register!" />
+    </form>
+</div>
+{% endblock content %}
