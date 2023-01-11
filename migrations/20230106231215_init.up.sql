@@ -2,24 +2,18 @@
 -- Add up migration script here
 CREATE TABLE
     identities (
-        name TEXT NOT NULL PRIMARY KEY,
-        -- phone TEXT, -- Phone is TODO
-        email TEXT,
-        code TEXT NOT NULL, -- code is a verification code used to activate a user
-        verified INTEGER DEFAULT 0
-    );
-
-CREATE TABLE
-    users (
-        name TEXT NOT NULL PRIMARY KEY,
-        password TEXT NOT NULL,
-        --
-        FOREIGN KEY (name) REFERENCES identities (name)
+        id TEXT PRIMARY KEY NOT NULL, -- Identity UUID
+        username TEXT NOT NULL UNIQUE,
+        -- phone TEXT, -- TODO: Add phone number
+        email TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        code TEXT NOT NULL, -- Code is a verification code used to activate a user
+        verified INTEGER DEFAULT 0 -- Whether the user has been activated
     );
 
 CREATE TABLE
     recipes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY NOT NULL,
         author TEXT NOT NULL,
         name TEXT NOT NULL,
         description TEXT,
@@ -31,15 +25,15 @@ CREATE TABLE
 -- when a quantity is attached
 CREATE TABLE
     items (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id TEXT PRIMARY KEY NOT NULL, -- Item UUID
         name TEXT NOT NULL,
         description TEXT
     );
 
 CREATE TABLE
     ingredients (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        item INTEGER NOT NULL,
+        id TEXT PRIMARY KEY NOT NULL, -- Ingredient UUID
+        item TEXT NOT NULL,
         quantity INTEGER NOT NULL,
         unit TEXT NOT NULL,
         --
@@ -49,25 +43,25 @@ CREATE TABLE
 
 CREATE TABLE
     steps (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        num INTEGER NOT NULL,
+        id TEXT PRIMARY KEY NOT NULL, -- Step UUID
         name TEXT,
         description TEXT NOT NULL
     );
 
 CREATE TABLE
     cookbooks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        author TEXT NOT NULL,
-        name TEXT,
+        id TEXT PRIMARY KEY, -- Cookbook UUID
+        author TEXT NOT NULL, -- Author UUID
+        name TEXT, -- Cookbook name
         --
         FOREIGN KEY (author) REFERENCES users (id)
     );
 
 CREATE TABLE
     recipes_ingredients (
-        recipe INTEGER NOT NULL,
-        ingredient INTEGER NOT NULL,
+        recipe TEXT NOT NULL, -- Recipe UUID
+        ingredient TEXT NOT NULL, -- Ingredient UUID
+        --
         PRIMARY KEY (recipe, ingredient),
         FOREIGN KEY (recipe) REFERENCES recipes (id),
         FOREIGN KEY (ingredient) REFERENCES ingredients (id)
@@ -75,8 +69,10 @@ CREATE TABLE
 
 CREATE TABLE
     recipes_steps (
-        recipe INTEGER NOT NULL,
-        step INTEGER NOT NULL,
+        recipe TEXT NOT NULL, -- Recipe UUID
+        step TEXT NOT NULL, -- Step UUID
+        num INTEGER NOT NULL UNIQUE, -- Step number in the recipe
+        --
         PRIMARY KEY (recipe, step),
         FOREIGN KEY (recipe) REFERENCES recipes (id),
         FOREIGN KEY (step) REFERENCES steps (id)
@@ -84,8 +80,9 @@ CREATE TABLE
 
 CREATE TABLE
     cookbooks_recipes (
-        cookbook INTEGER NOT NULL,
-        recipe INTEGER NOT NULL,
+        cookbook TEXT NOT NULL, -- Cookbook UUID
+        recipe TEXT NOT NULL, -- Recipe UUID
+        --
         PRIMARY KEY (cookbook, recipe),
         FOREIGN KEY (cookbook) REFERENCES cookbooks (id),
         FOREIGN KEY (recipe) REFERENCES recipes (id)

@@ -1,25 +1,63 @@
 use anyhow::Result;
-use sqlx::{query_as, sqlite::SqlitePoolOptions};
+use dotenvy_macro::dotenv;
+use sqlx::{pool::PoolConnection, query, query_as, sqlite::SqlitePoolOptions, Sqlite};
 
-use crate::entity::identity::Identity;
+use crate::{entity::identity::Identity, uuid::Uuid};
 
-pub const USER_DB: &str = "sqlite::memory:";
+pub const DB_PATH: &str = dotenv!("DATABASE_URL");
 
-pub async fn username_is_unique(username: &str) -> Result<bool> {
+pub async fn connection() -> Result<PoolConnection<Sqlite>> {
     let pool = SqlitePoolOptions::new()
-        .connect(USER_DB)
+        .connect(DB_PATH)
         .await
         .expect("Failed to connect to database");
 
-    let mut conn = pool.acquire().await?;
+    let conn = pool.acquire().await?;
 
-    let identity = query_as!(
-        Identity,
-        "SELECT * FROM identities WHERE username = ?",
-        username,
+    Ok(conn)
+}
+
+pub async fn query_identity_id(id: &Uuid) -> Result<Option<Identity>> {
+    let mut conn = connection().await?;
+    let identity: Option<Identity> = query_as("SELECT * FROM identities WHERE id = ?")
+        .bind(&id)
+        .fetch_one(&mut conn)
+        .await
+        .ok();
+
+    Ok(identity)
+}
+
+pub async fn query_identity_username(username: &str) -> Result<Option<Identity>> {
+    let mut conn = connection().await?;
+    let identity: Option<Identity> = query_as("SELECT * FROM identities WHERE username = ?")
+        .bind(&username)
+        .fetch_one(&mut conn)
+        .await
+        .ok();
+
+    Ok(identity)
+}
+
+pub async fn insert_identity(identity: &Identity) -> Result<()> {
+    let mut conn = connection().await?;
+
+    query(
+        r#"
+        INSERT INTO identities
+            (id, username, email, password_hash, code, verified)
+        VALUES
+            (?, ?, ?, ?, ?, ?);
+        "#,
     )
-    .fetch_one(&mut conn)
+    .bind(&identity.id)
+    .bind(&identity.username)
+    .bind(&identity.email)
+    .bind(&identity.password_hash)
+    .bind(&identity.code)
+    .bind(&identity.verified)
+    .execute(&mut conn)
     .await?;
 
-    false
+    Ok(())
 }

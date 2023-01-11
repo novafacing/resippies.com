@@ -18,6 +18,8 @@ http = "0.2.8"
 pwhash = "1.0.0"
 regex = "1.7.0"
 lazy_static = "1.4.0"
+dotenvy = "0.15.6"
+dotenvy_macro = "0.15.1"
 
 [dependencies.axum-login]
 version = "0.4.1"
@@ -30,7 +32,7 @@ features = ["tera"]
 [dependencies.sqlx]
 version = "0.6.2"
 default-features = false
-features = ["runtime-tokio-rustls", "sqlite"]
+features = ["runtime-tokio-rustls", "sqlite", "offline", "migrate", "macros"]
 
 [dependencies.tokio]
 version = "1.23.0"
@@ -51,3 +53,7 @@ features = ["env-filter"]
 [dependencies.tower-http]
 version = "0.3.5"
 features = ["trace"]
+
+[dependencies.uuid]
+version = "1.2.2"
+features = ["v7", "std"]

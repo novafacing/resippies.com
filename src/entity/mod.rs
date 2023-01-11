@@ -4,4 +4,3 @@ pub mod ingredient;
 pub mod item;
 pub mod recipe;
 pub mod step;
-pub mod user;

@@ -1,6 +1,13 @@
-use anyhow::{anyhow, Result};
+use std::fmt::Display;
+
+use crate::{
+    db::{insert_identity, query_identity_username},
+    uuid::Uuid,
+};
+use anyhow::{anyhow, Context, Result};
 use axum_login::{secrecy::SecretVec, AuthUser};
-use sqlx::{sqlite::SqlitePoolOptions, FromRow};
+use serde::{Deserialize, Serialize};
+use sqlx::{Encode, FromRow, Type};
 
 use crate::{
     handlers::auth::RegisterForm,
@@ -8,11 +15,14 @@ use crate::{
     pattern::{PASSWORD_PATTERN, USERNAME_PATTERN},
 };
 
-#[derive(Debug, Default, Clone, FromRow)]
+#[derive(Debug, Default, Clone, FromRow, Encode, Serialize, Deserialize, Type)]
 pub struct Identity {
+    pub id: Uuid,
     pub username: String,
     pub email: String,
     pub password_hash: String,
+    pub code: Uuid,
+    pub verified: bool,
 }
 
 impl AuthUser for Identity {
@@ -37,15 +47,28 @@ impl Identity {
             Err(anyhow!(
                 "Username is not a letter followed by letters and numbers."
             ))
-        } else if !username_is_unique(&form.username) {
+        } else if query_identity_username(&form.username).await?.is_some() {
             Err(anyhow!("Username already exists."))
         } else {
-            let password_hash = hash_password(&form.password)?;
-            Ok(Self {
-                username: form.username,
-                email: form.email,
-                password_hash,
-            })
+            let password_hash =
+                hash_password(&form.password).context("Could not hash password.")?;
+
+            let identity = Identity::new(form.username, form.email, password_hash);
+
+            insert_identity(&identity).await?;
+
+            Ok(identity)
+        }
+    }
+
+    pub fn new(username: String, email: String, password_hash: String) -> Self {
+        Self {
+            id: Uuid::now_v7(),
+            username,
+            email,
+            password_hash,
+            code: Uuid::now_v7(),
+            verified: false,
         }
     }
 }

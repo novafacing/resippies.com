@@ -20,6 +20,7 @@ mod pattern;
 mod render;
 mod static_files;
 mod templates;
+mod uuid;
 
 use render::State;
 use templates::init_templates;
@@ -28,6 +29,8 @@ use tracing_subscriber::{
     fmt::layer, prelude::__tracing_subscriber_SubscriberExt, registry, util::SubscriberInitExt,
     EnvFilter,
 };
+
+use crate::db::DB_PATH;
 
 #[cfg(debug_assertions)]
 const ADDRESS: &str = "127.0.0.1";
@@ -56,7 +59,7 @@ async fn main() {
     let session_layer = SessionLayer::new(session_store, &secret).with_secure(false);
 
     let pool = SqlitePoolOptions::new()
-        .connect(db::USER_DB)
+        .connect(DB_PATH)
         .await
         .expect("Failed to connect to database");
 
