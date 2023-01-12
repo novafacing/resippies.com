@@ -12,6 +12,7 @@ use rand::{thread_rng, Rng};
 use sqlx::sqlite::SqlitePoolOptions;
 use tower_http::trace::TraceLayer;
 
+mod auth;
 mod db;
 mod entity;
 mod handlers;
@@ -74,11 +75,11 @@ async fn main() {
         .route("/static/*path", get(static_files::get_static))
         .route(
             "/login",
-            get(handlers::auth::get_login).post(handlers::auth::post_login),
+            get(handlers::login::get_login).post(handlers::login::post_login),
         )
         .route(
             "/register",
-            get(handlers::auth::get_register).post(handlers::auth::post_register),
+            get(handlers::register::get_register).post(handlers::register::post_register),
         )
         .layer(auth_layer)
         .layer(session_layer)

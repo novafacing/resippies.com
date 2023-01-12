@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use crate::{
     db::{insert_identity, query_identity_username},
     uuid::Uuid,
@@ -10,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Encode, FromRow, Type};
 
 use crate::{
-    handlers::auth::RegisterForm,
+    handlers::register::RegisterForm,
     password::hash_password,
     pattern::{PASSWORD_PATTERN, USERNAME_PATTERN},
 };
