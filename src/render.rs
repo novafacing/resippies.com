@@ -9,6 +9,6 @@ pub type RenderEngine = Engine<Tera>;
 pub struct Empty;
 
 #[derive(Clone, FromRef)]
-pub struct State {
+pub struct RenderState {
     pub render_engine: RenderEngine,
 }

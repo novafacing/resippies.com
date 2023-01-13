@@ -1,7 +1,11 @@
 #[macro_use]
 extern crate lazy_static;
 
-use axum::{routing::get, Router, Server};
+use axum::{
+    response::{IntoResponse, Redirect},
+    routing::get,
+    Router, Server,
+};
 use axum_login::{
     axum_sessions::{async_session::MemoryStore, SessionLayer},
     AuthLayer, SqliteStore,
@@ -18,12 +22,13 @@ mod entity;
 mod handlers;
 mod password;
 mod pattern;
+mod queries;
 mod render;
 mod static_files;
 mod templates;
 mod uuid;
 
-use render::State;
+use render::RenderState;
 use templates::init_templates;
 use tracing::debug;
 use tracing_subscriber::{
@@ -72,7 +77,8 @@ async fn main() {
         .expect("Failed to initialize templates");
 
     let app = Router::new()
-        .route("/static/*path", get(static_files::get_static))
+        .route("/", get(handlers::index::redirect_index))
+        .route("/index", get(handlers::index::get_index))
         .route(
             "/login",
             get(handlers::login::get_login).post(handlers::login::post_login),
@@ -81,10 +87,11 @@ async fn main() {
             "/register",
             get(handlers::register::get_register).post(handlers::register::post_register),
         )
+        .route("/static/*path", get(static_files::get_static))
         .layer(auth_layer)
         .layer(session_layer)
         .layer(TraceLayer::new_for_http())
-        .with_state(State {
+        .with_state(RenderState {
             render_engine: Engine::from(tera),
         });
 

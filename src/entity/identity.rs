@@ -1,5 +1,6 @@
 use crate::{
-    db::{insert_identity, query_identity_username},
+    handlers::login::LoginForm,
+    queries::identity::{insert_identity, query_identity_username},
     uuid::Uuid,
 };
 use anyhow::{anyhow, Context, Result};
@@ -34,7 +35,7 @@ impl AuthUser for Identity {
 }
 
 impl Identity {
-    pub async fn from_form(form: RegisterForm) -> Result<Self> {
+    pub async fn from_register_form(form: RegisterForm) -> Result<Self> {
         if form.password != form.confirm_password {
             Err(anyhow!("Passwords do not match!"))
         } else if !PASSWORD_PATTERN.is_match(&form.password) {
@@ -56,6 +57,20 @@ impl Identity {
             insert_identity(&identity).await?;
 
             Ok(identity)
+        }
+    }
+
+    pub async fn from_login_form(form: LoginForm) -> Result<Self> {
+        if let Some(identity) = query_identity_username(&form.username).await? {
+            let password_hash =
+                hash_password(&form.password).context("Could not hash password.")?;
+            if password_hash == identity.password_hash {
+                Ok(identity)
+            } else {
+                Err(anyhow!("Incorrect password."))
+            }
+        } else {
+            Err(anyhow!("Username does not exist."))
         }
     }
 

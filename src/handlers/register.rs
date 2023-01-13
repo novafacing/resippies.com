@@ -7,9 +7,9 @@ use axum::{
 };
 use axum_template::{Key, RenderHtml};
 use serde::{Deserialize, Serialize};
-use tracing::{debug, error, info};
+use tracing::{debug, error};
 
-use crate::{auth::AuthCtx, entity::identity::Identity, render::RenderEngine};
+use crate::{entity::identity::Identity, render::RenderEngine};
 
 #[derive(Deserialize, Debug)]
 pub struct RegisterForm {
@@ -44,27 +44,15 @@ pub async fn get_register(
     RenderHtml(key, engine, response)
 }
 
-pub async fn post_register(
-    mut auth: AuthCtx,
-    Form(register): Form<RegisterForm>,
-) -> impl IntoResponse {
-    match Identity::from_form(register).await {
+pub async fn post_register(Form(register): Form<RegisterForm>) -> impl IntoResponse {
+    match Identity::from_register_form(register).await {
         Ok(identity) => {
             debug!("Generated identity for {}", identity.username);
-            match auth.login(&identity).await {
-                Ok(_) => {
-                    info!("Logged in user {}", identity.username);
-                    Redirect::to("/").into_response()
-                }
-                Err(e) => {
-                    error!("Error logging in: {}. Redirecting to login page.", e);
-                    Redirect::to(&format!("/login?error_message={}", e.to_string())).into_response()
-                }
-            }
+            Redirect::to("/login").into_response()
         }
         Err(e) => {
             error!("Error registering: {}. Redirecting to register page.", e);
-            Redirect::to(&format!("/register?error_message={}", e.to_string())).into_response()
+            Redirect::to("/register").into_response()
         }
     }
 }
