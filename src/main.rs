@@ -1,3 +1,14 @@
+mod auth;
+mod db;
+mod entity;
+mod handlers;
+mod password;
+mod pattern;
+mod render;
+mod static_files;
+mod templates;
+mod uuid;
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -11,32 +22,21 @@ use axum_login::{
     AuthLayer, SqliteStore,
 };
 use axum_template::engine::Engine;
+use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine as _};
+use dotenvy_macro::dotenv;
 use entity::identity::Identity;
 use rand::{thread_rng, Rng};
-use sqlx::sqlite::SqlitePoolOptions;
-use tower_http::trace::TraceLayer;
-
-mod auth;
-mod db;
-mod entity;
-mod handlers;
-mod password;
-mod pattern;
-mod queries;
-mod render;
-mod static_files;
-mod templates;
-mod uuid;
-
 use render::RenderState;
+use sqlx::sqlite::SqlitePoolOptions;
 use templates::init_templates;
+use tower_http::trace::TraceLayer;
 use tracing::debug;
 use tracing_subscriber::{
     fmt::layer, prelude::__tracing_subscriber_SubscriberExt, registry, util::SubscriberInitExt,
     EnvFilter,
 };
 
-use crate::db::DB_PATH;
+use crate::db::DATABASE_URL;
 
 #[cfg(debug_assertions)]
 const ADDRESS: &str = "127.0.0.1";
@@ -45,7 +45,6 @@ const PORT: u16 = 8000;
 
 #[cfg(not(debug_assertions))]
 const ADDRESS: &str = "0.0.0.0";
-
 #[cfg(not(debug_assertions))]
 const PORT: u16 = 80;
 
@@ -54,22 +53,27 @@ async fn main() {
     registry()
         .with(
             EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "resippies_com=debug,tower_http=info".into()),
+                .unwrap_or_else(|_| "resippies_com=debug,tower_http=debug,axum_login=debug".into()),
         )
         .with(layer())
         .init();
 
-    let secret = thread_rng().gen::<[u8; 64]>();
+    let encoded_secret: &str = dotenv!("SECRET_KEY").trim();
+    let secret = BASE64_STANDARD_NO_PAD
+        .decode(encoded_secret)
+        .expect("Failed to decode secret key");
 
     let session_store = MemoryStore::new();
     let session_layer = SessionLayer::new(session_store, &secret).with_secure(false);
 
     let pool = SqlitePoolOptions::new()
-        .connect(DB_PATH)
+        .connect(DATABASE_URL)
         .await
         .expect("Failed to connect to database");
 
-    let user_store = SqliteStore::<Identity>::new(pool);
+    // TODO: with_query is called with_table until 4.0.2, this will change to with_query at some point!
+    // TODO: let user_store = SqliteStore::<Identity>::new(pool).with_query(QUERY_SELECT_IDENTITY_BY_ID);
+    let user_store = SqliteStore::<Identity>::new(pool).with_table_name(Identity::TABLE_NAME);
     let auth_layer = AuthLayer::new(user_store, &secret);
 
     let tera = init_templates()

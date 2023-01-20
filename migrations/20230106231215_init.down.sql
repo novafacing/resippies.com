@@ -1,5 +1,3 @@
--- Add down migration script here
--- Add down migration script here
 DROP TABLE recipes_ingredients;
 
 DROP TABLE recipes_steps;

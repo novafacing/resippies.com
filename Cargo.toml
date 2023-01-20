@@ -3,10 +3,18 @@ name = "resippies-com"
 version = "0.1.0"
 edition = "2021"
 
+[build-dependencies]
+base64 = "0.21.0"
+
+[build-dependencies.rand]
+version = "0.8.5"
+features = ["min_const_gen"]
+
 [dependencies]
 anyhow = "1.0.68"
 axum = "0.6.1"
 axum-macros = "0.3.0"
+base64 = "0.21.0"
 tower = "0.4.13"
 serde = "1.0.152"
 tera = "1.17.1"

@@ -4,11 +4,11 @@ use sqlx::{pool::PoolConnection, query, query_as, sqlite::SqlitePoolOptions, Sql
 
 use crate::{entity::identity::Identity, uuid::Uuid};
 
-pub const DB_PATH: &str = dotenv!("DATABASE_URL");
+pub const DATABASE_URL: &str = dotenv!("DATABASE_URL");
 
 pub async fn connection() -> Result<PoolConnection<Sqlite>> {
     let pool = SqlitePoolOptions::new()
-        .connect(DB_PATH)
+        .connect(DATABASE_URL)
         .await
         .expect("Failed to connect to database");
 

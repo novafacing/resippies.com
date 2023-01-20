@@ -19,7 +19,7 @@ pub struct LoginResponse {}
 
 pub async fn get_login(auth: AuthCtx, engine: RenderEngine, Key(key): Key) -> impl IntoResponse {
     match auth.current_user {
-        Some(user) => {
+        Some(_) => {
             let response = LoginResponse {};
             RenderHtml(key, engine, response)
         }
@@ -40,7 +40,7 @@ pub async fn post_login(mut auth: AuthCtx, Form(login): Form<LoginForm>) -> impl
             match auth.login(&identity).await {
                 Ok(_) => {
                     info!("Logged in user {}", identity.username);
-                    Redirect::to("/index").into_response()
+                    Redirect::to("/").into_response()
                 }
                 Err(e) => {
                     error!("Error logging in: {}. Redirecting to login page.", e);

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use axum::{
     extract::Query,
     response::{IntoResponse, Redirect},
-    Form,
+    Extension, Form,
 };
 use axum_template::{Key, RenderHtml};
 use serde::{Deserialize, Serialize};

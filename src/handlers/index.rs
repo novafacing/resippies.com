@@ -12,6 +12,7 @@ use crate::{auth::AuthCtx, entity::identity::Identity, render::RenderEngine};
 pub struct IndexResponse {}
 
 pub async fn get_index(auth: AuthCtx, engine: RenderEngine, Key(key): Key) -> impl IntoResponse {
+    debug!("Loading index page");
     let response = IndexResponse {};
     RenderHtml(key, engine, response)
 }

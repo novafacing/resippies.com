@@ -1,5 +1,3 @@
--- Add up migration script here
--- Add up migration script here
 CREATE TABLE
     identities (
         id TEXT PRIMARY KEY NOT NULL, -- Identity UUID
