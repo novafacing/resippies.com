@@ -40,7 +40,15 @@ features = ["tera"]
 [dependencies.sqlx]
 version = "0.6.2"
 default-features = false
-features = ["runtime-tokio-rustls", "sqlite", "offline", "migrate", "macros"]
+features = [
+    "runtime-tokio-rustls",
+    "sqlite",
+    "offline",
+    "migrate",
+    "macros",
+    "chrono",
+    "time",
+]
 
 [dependencies.tokio]
 version = "1.23.0"

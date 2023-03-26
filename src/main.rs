@@ -46,10 +46,9 @@ const PORT: u16 = 80;
 #[tokio::main]
 async fn main() {
     registry()
-        .with(
-            EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "resippies_com=debug,tower_http=debug,axum_login=debug".into()),
-        )
+        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+            "resippies_com=debug,tower_http=debug,axum_login=debug,axum_template=debug".into()
+        }))
         .with(layer())
         .init();
 
@@ -86,6 +85,7 @@ async fn main() {
             "/register",
             get(handlers::register::get_register).post(handlers::register::post_register),
         )
+        .route("/recipe/:id", get(handlers::recipe::get_recipe))
         .route("/static/*path", get(static_files::get_static))
         .layer(auth_layer)
         .layer(session_layer)

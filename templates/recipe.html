@@ -1,0 +1,48 @@
+{% extends "/base" %}
+{% block title %}
+Recipe
+{% endblock title %}
+{% block head %}
+{{ super()}}
+{% endblock head %}
+{% block content %}
+<h1>{{ response.recipe.name }} by <a href="/identity/{{ response.author.id }}">{{ response.author.username }}</a></h1>
+<b>This recipe is part of the following cookbooks:</b>
+<ul>
+    {% for cookbook in response.cookbooks %}
+    <li>
+        <a href="/cookbook/{{ cookbook.id }}">
+            {{ cookbook.name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+<div class="recipe-description">
+    <p>
+        {{ response.recipe.description }}
+    </p>
+</div>
+<h2>Ingredients</h2>
+<ul>
+    {% for ingredient_item in response.ingredients %}
+    <li>
+        <b>{{ ingredient_item[0].quantity }} {{ ingredient_item[0].unit }}</b>
+        {{ ingredient_item[1].name }}
+        {% if ingredient_item[1].description | length > 1 %}
+        <br>
+        <div class="left-indent">
+            {{ ingredient_item[1].description }}
+        </div>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+<h2>Steps</h2>
+<ol>
+    {% for step in response.steps %}
+    <li>
+        <b>{{ step.name }}:</b> {{ step.description }}
+    </li>
+    {% endfor %}
+</ol>
+{% endblock content %}

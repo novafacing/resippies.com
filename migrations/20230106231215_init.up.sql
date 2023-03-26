@@ -16,7 +16,6 @@ CREATE TABLE recipes (
     description TEXT,
     visibility TEXT CHECK (visibility IN ('public', 'private')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    --
     FOREIGN KEY (author) REFERENCES identities (id)
 );
 -- Item is an ingredient with no defined quantity, it becomes an ingredient
@@ -33,7 +32,6 @@ CREATE TABLE ingredients (
     item TEXT NOT NULL,
     quantity REAL NOT NULL,
     unit TEXT NOT NULL,
-    --
     FOREIGN KEY (item) REFERENCES items (id),
     UNIQUE (item, quantity, unit)
 );
@@ -50,8 +48,7 @@ CREATE TABLE cookbooks (
     -- Author UUID
     name TEXT,
     -- Cookbook name
-    visibility TEXT,
-    --
+    visibility TEXT CHECK (visibility IN ('public', 'private')),
     FOREIGN KEY (author) REFERENCES identities (id)
 );
 CREATE TABLE recipes_ingredients (
@@ -59,7 +56,6 @@ CREATE TABLE recipes_ingredients (
     -- Recipe UUID
     ingredient TEXT NOT NULL,
     -- Ingredient UUID
-    --
     PRIMARY KEY (recipe, ingredient),
     FOREIGN KEY (recipe) REFERENCES recipes (id),
     FOREIGN KEY (ingredient) REFERENCES ingredients (id)
@@ -71,8 +67,7 @@ CREATE TABLE recipes_steps (
     -- Step UUID
     num INTEGER NOT NULL UNIQUE,
     -- Step number in the recipe
-    --
-        PRIMARY KEY (recipe, step),
+    PRIMARY KEY (recipe, step),
     FOREIGN KEY (recipe) REFERENCES recipes (id),
     FOREIGN KEY (step) REFERENCES steps (id)
 );
@@ -81,8 +76,40 @@ CREATE TABLE cookbooks_recipes (
     -- Cookbook UUID
     recipe TEXT NOT NULL,
     -- Recipe UUID
-    --
-        PRIMARY KEY (cookbook, recipe),
-    FOREIGN KEY (cookbook) REFERENCES cookbooks (id),
-    FOREIGN KEY (recipe) REFERENCES recipes (id)
+    PRIMARY KEY (cookbook, recipe),
+    FOREIGN KEY (cookbook) REFERENCES cookbooks (id)
 );
+CREATE TRIGGER cookbook_recipe_visibility BEFORE
+INSERT ON cookbooks_recipes FOR EACH ROW
+    WHEN (
+        (
+            SELECT visibility
+            FROM cookbooks
+            WHERE id = NEW.cookbook
+        ) = 'public'
+        OR (
+            SELECT visibility
+            FROM cookbooks
+            WHERE id = NEW.cookbook
+        ) = 'private'
+        AND (
+            SELECT visibility
+            FROM recipes
+            WHERE id = NEW.recipe
+        ) = 'private'
+    ) BEGIN
+SELECT RAISE(
+        ABORT,
+        'Recipes in public cookbooks must be public'
+    )
+WHERE (
+        SELECT visibility
+        FROM cookbooks
+        WHERE id = NEW.cookbook
+    ) = 'public'
+    AND (
+        SELECT visibility
+        FROM recipes
+        WHERE id = NEW.recipe
+    ) = 'private';
+END;

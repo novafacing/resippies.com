@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{sqlite::SqliteTypeInfo, Decode, Encode, Sqlite, Type};
 use uuid::Uuid as ExtUuid;
 
-#[derive(Debug, Clone, Default, Decode, Encode, Serialize, Deserialize)]
+#[derive(Eq, PartialEq, Hash, Debug, Clone, Default, Decode, Encode, Serialize, Deserialize)]
 pub struct Uuid(String);
 
 impl Uuid {

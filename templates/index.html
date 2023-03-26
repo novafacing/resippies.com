@@ -6,10 +6,39 @@ Home
 {{ super()}}
 {% endblock head %}
 {% block content %}
-{% for recipe in recipes %}
-<div class="recipe">
-    <h2>{{ recipe.title }}</h2>
-    <p>{{ recipe.description }}</p>
-</div>
-{% endfor %}
+<table width="100%">
+    <tbody>
+        {% for recipe in recipes %}
+        <tr>
+            <td width="15%%">
+                <a href="/recipe/{{ recipe.id }}">{{ recipe.name }}</a>
+                <br>
+                by <a href="/identity/{{ authors[recipe.id].id }}">{{ authors[recipe.id].username }}</a>
+                <br>
+                {% if cookbooks | length > 1 %}
+                from:
+                <ul>
+                    {% for cookbook in cookbooks[recipe.id] %}
+                    <li>
+                        <a href="/cookbook/{{ cookbook.id }}">
+                            {{ cookbook.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% if cookbooks | length == 1 %}
+                from <a href="/cookbook/{{ cookbooks[recipe.id][0].id }}">{{ cookbooks[recipe.id][0].name
+                    }}</a>
+                {% endif %}
+            </td>
+            <td width="85%">
+                <div class="truncate">
+                    {{ recipe.description | truncate(length=256) }}
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock content %}

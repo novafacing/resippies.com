@@ -20,6 +20,16 @@ body {
   min-height: 100%;
 }
 
+ul {
+  margin: 0 auto;
+  padding-top: 0.2rem;
+}
+
+.left-indent {
+  margin-left: 2rem;
+  margin-top: 0.5rem;
+}
+
 .container {
   margin: 0 auto;
   padding-top: 1rem;
@@ -28,7 +38,18 @@ body {
 }
 
 .content {
-  padding: 1rem;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.recipe-description {
+  width: 60%; /* or any other percentage value */
+  margin: 2 auto;
+}
+
+p {
+  display: inline-block;
+  text-align: left;
 }
 
 input {
