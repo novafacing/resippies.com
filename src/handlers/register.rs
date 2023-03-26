@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use axum::{
     extract::Query,
     response::{IntoResponse, Redirect},
-    Extension, Form,
+    Form,
 };
 use axum_template::{Key, RenderHtml};
 use serde::{Deserialize, Serialize};
@@ -27,10 +27,7 @@ pub struct RegisterResponse {
 impl From<&HashMap<String, String>> for RegisterResponse {
     fn from(value: &HashMap<String, String>) -> Self {
         Self {
-            error_message: match value.get("error_message") {
-                Some(s) => Some(s.to_string()),
-                None => None,
-            },
+            error_message: value.get("error_message").map(|s| s.to_string()),
         }
     }
 }

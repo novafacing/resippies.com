@@ -50,7 +50,7 @@ impl Identity {
     pub async fn query_by_id(id: &Uuid) -> Result<Option<Identity>> {
         let mut conn = connection().await?;
         let identity: Option<Identity> = query_as(Identity::QUERY_SELECT_IDENTITY_BY_ID)
-            .bind(&id)
+            .bind(id)
             .fetch_one(&mut conn)
             .await
             .ok();
@@ -61,7 +61,7 @@ impl Identity {
     pub async fn query_by_username(username: &str) -> Result<Option<Identity>> {
         let mut conn = connection().await?;
         let identity: Option<Identity> = query_as(Identity::QUERY_SELECT_IDENTITY_BY_USERNAME)
-            .bind(&username)
+            .bind(username)
             .fetch_one(&mut conn)
             .await
             .ok();
@@ -78,7 +78,7 @@ impl Identity {
             .bind(&identity.email)
             .bind(&identity.password_hash)
             .bind(&identity.code)
-            .bind(&identity.verified)
+            .bind(identity.verified)
             .execute(&mut conn)
             .await?;
 

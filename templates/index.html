@@ -6,4 +6,10 @@ Home
 {{ super()}}
 {% endblock head %}
 {% block content %}
+{% for recipe in recipes %}
+<div class="recipe">
+    <h2>{{ recipe.title }}</h2>
+    <p>{{ recipe.description }}</p>
+</div>
+{% endfor %}
 {% endblock content %}

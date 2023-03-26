@@ -10,10 +10,7 @@ const HASH_PARAMS: HashSetup = HashSetup {
 };
 
 pub fn hash_password(password: &str) -> Result<String> {
-    Ok(
-        hash_with(HASH_PARAMS, password)
-            .context("Password could not be hashed for some reason.")?,
-    )
+    hash_with(HASH_PARAMS, password).context("Password could not be hashed for some reason.")
 }
 
 pub fn validate_password(password: &str, hash: &str) -> bool {

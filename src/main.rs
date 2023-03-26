@@ -12,11 +12,7 @@ mod uuid;
 #[macro_use]
 extern crate lazy_static;
 
-use axum::{
-    response::{IntoResponse, Redirect},
-    routing::get,
-    Router, Server,
-};
+use axum::{routing::get, Router, Server};
 use axum_login::{
     axum_sessions::{async_session::MemoryStore, SessionLayer},
     AuthLayer, SqliteStore,
@@ -25,7 +21,6 @@ use axum_template::engine::Engine;
 use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine as _};
 use dotenvy_macro::dotenv;
 use entity::identity::Identity;
-use rand::{thread_rng, Rng};
 use render::RenderState;
 use sqlx::sqlite::SqlitePoolOptions;
 use templates::init_templates;

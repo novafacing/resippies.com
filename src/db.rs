@@ -1,8 +1,6 @@
 use anyhow::Result;
 use dotenvy_macro::dotenv;
-use sqlx::{pool::PoolConnection, query, query_as, sqlite::SqlitePoolOptions, Sqlite};
-
-use crate::{entity::identity::Identity, uuid::Uuid};
+use sqlx::{pool::PoolConnection, sqlite::SqlitePoolOptions, Sqlite};
 
 pub const DATABASE_URL: &str = dotenv!("DATABASE_URL");
 
