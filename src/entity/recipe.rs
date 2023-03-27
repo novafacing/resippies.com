@@ -8,6 +8,8 @@ use sqlx::{
 
 use crate::{db::connection, uuid::Uuid};
 
+use super::identity::Identity;
+
 #[derive(Debug, FromRow, Encode, Decode, Serialize, Deserialize)]
 pub struct Recipe {
     pub id: Uuid,
@@ -28,7 +30,15 @@ impl Recipe {
         VALUES
             (?, ?, ?, ?, ?);
         "#;
+    pub const QUERY_INSERT_RECIPES_CONTRIBUTORS: &str = r#"
+        INSERT INTO recipes_contributors
+            (recipe, contributor)
+        VALUES
+            (?, ?);
+        "#;
     pub const QUERY_SELECT_RECIPES_BY_COOKBOOK: &str = "SELECT * FROM recipes INNER JOIN cookbooks_recipes ON cookbooks_recipes.recipe = recipes.id WHERE cookbooks_recipes.cookbook = ?";
+    pub const QUERY_SELECT_RECIPES_CONTRIBUTORS: &str =
+        "SELECT * FROM recipes_contributors WHERE recipe = ?";
 
     pub const QUERY_PUBLIC_VISIBLE_RECIPES_LIMIT: &str =
         "SELECT * FROM recipes WHERE visibility = 'public' ORDER BY created_at DESC LIMIT ? OFFSET ?";
@@ -84,7 +94,50 @@ impl Recipe {
             .bind(&self.visibility)
             .execute(&mut conn)
             .await?;
+        sqlx::query(Recipe::QUERY_INSERT_RECIPES_CONTRIBUTORS)
+            .bind(&self.id)
+            .bind(&self.author)
+            .execute(&mut conn)
+            .await?;
 
         Ok(())
+    }
+}
+
+impl Recipe {
+    pub async fn can_view(&self, identity: &Option<Identity>) -> bool {
+        if self.visibility == "public" {
+            true
+        } else if let Some(identity) = identity {
+            // Check if the identity is a contributor to the recipe
+            let mut conn = connection().await.unwrap();
+            let contributors: Vec<Identity> = query_as(Recipe::QUERY_SELECT_RECIPES_CONTRIBUTORS)
+                .bind(&self.id)
+                .fetch_all(&mut conn)
+                .await
+                .unwrap();
+            contributors
+                .iter()
+                .any(|contributor| contributor.id == identity.id)
+        } else {
+            false
+        }
+    }
+
+    pub async fn can_edit(&self, identity: &Option<Identity>) -> bool {
+        if let Some(identity) = identity {
+            // Check if the identity is a contributor to the recipe
+            let mut conn = connection().await.unwrap();
+            let contributors: Vec<Identity> = query_as(Recipe::QUERY_SELECT_RECIPES_CONTRIBUTORS)
+                .bind(&self.id)
+                .fetch_all(&mut conn)
+                .await
+                .unwrap();
+            contributors
+                .iter()
+                .any(|contributor| contributor.id == identity.id)
+        } else {
+            false
+        }
     }
 }

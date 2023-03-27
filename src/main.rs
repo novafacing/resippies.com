@@ -86,6 +86,13 @@ async fn main() {
             get(handlers::register::get_register).post(handlers::register::post_register),
         )
         .route("/recipe/:id", get(handlers::recipe::get_recipe))
+        .route("/cookbook/:id", get(handlers::cookbook::get_cookbook))
+        .route(
+            "/create_cookbook",
+            get(handlers::cookbook::get_create_cookbook)
+                .post(handlers::cookbook::post_create_cookbook),
+        )
+        .route("/identity/:id", get(handlers::identity::get_identity))
         .route("/static/*path", get(static_files::get_static))
         .layer(auth_layer)
         .layer(session_layer)

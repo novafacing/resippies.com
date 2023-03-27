@@ -47,6 +47,7 @@ CREATE TABLE cookbooks (
     author TEXT NOT NULL,
     -- Author UUID
     name TEXT,
+    description TEXT,
     -- Cookbook name
     visibility TEXT CHECK (visibility IN ('public', 'private')),
     FOREIGN KEY (author) REFERENCES identities (id)
@@ -113,3 +114,21 @@ WHERE (
         WHERE id = NEW.recipe
     ) = 'private';
 END;
+CREATE TABLE cookbooks_contributors (
+    cookbook TEXT NOT NULL,
+    -- Cookbook UUID
+    contributor TEXT NOT NULL,
+    -- Contributor UUID
+    PRIMARY KEY (cookbook, contributor),
+    FOREIGN KEY (cookbook) REFERENCES cookbooks (id),
+    FOREIGN KEY (contributor) REFERENCES identities (id)
+);
+CREATE TABLE recipes_contributors (
+    recipe TEXT NOT NULL,
+    -- Recipe UUID
+    contributor TEXT NOT NULL,
+    -- Contributor UUID
+    PRIMARY KEY (recipe, contributor),
+    FOREIGN KEY (recipe) REFERENCES recipes (id),
+    FOREIGN KEY (contributor) REFERENCES identities (id)
+);

@@ -1,0 +1,28 @@
+{% extends "/base" %}
+{% block title %}
+Register
+{% endblock title %}
+{% block head %}
+{{ super()}}
+{% endblock head %}
+{% block content %}
+<div style="margin: 0 auto; width: 60%;">
+    <form action="/create_cookbook" method="post">
+        <label for="name">Cookbook Name:</label>
+        <input type="text" name="name" placeholder="My Cookbook" />
+        <br>
+        <label for="description">Cookbook Description:</label>
+        <br>
+        <textarea name="description" style="width: 100%; min-height: 8rem;"
+            placeholder="My Cookbook Description"></textarea>
+        <br>
+        <label for="visibility">Visibility:</label>
+        <select id="visibility" name="visibility">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </select>
+        <br>
+        <input type="submit" value="Create!" />
+    </form>
+</div>
+{% endblock content %}

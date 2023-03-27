@@ -13,7 +13,13 @@ VALUES (
         '018719d8-e2ec-725b-b455-30ae2d1a3faf',
         '018719d1-9343-738a-b5db-8136bb2fd4f3',
         'Demo Cookbook',
+        'This is a demo cookbook.',
         'public'
+    );
+INSERT INTO cookbooks_contributors
+VALUES (
+        '018719d8-e2ec-725b-b455-30ae2d1a3faf',
+        '018719d1-9343-738a-b5db-8136bb2fd4f3'
     );
 INSERT INTO recipes (id, author, name, description, visibility)
 VALUES (
@@ -22,6 +28,11 @@ VALUES (
         'Grammys Pancakes',
         "If there's one thing that brings back happy memories of lazy weekend mornings with my grandmother, it's her famous pancake recipe. She used to say that the secret to making the perfect pancakes was in the batter, which had to be just the right consistency - not too thick, not too thin - and allowed to rest for a few minutes before cooking. Once the batter was ready, she would heat up a griddle and drop spoonfuls of it onto the hot surface, watching as the pancakes began to bubble and rise. The result was a stack of fluffy, golden pancakes that were simply irresistible. I've since learned that my grandmother's pancake recipe is actually an old family recipe that has been passed down through the generations. It's a simple recipe that uses basic ingredients like flour, sugar, milk, and eggs, but the magic is in the technique. With a little bit of patience and practice, anyone can make these delicious pancakes and enjoy a taste of family history with every bite.",
         'public'
+    );
+INSERT INTO recipes_contributors
+VALUES (
+        '018719d6-d1b7-7cf1-95db-a741160e6305',
+        '018719d1-9343-738a-b5db-8136bb2fd4f3'
     );
 INSERT INTO items
 VALUES (

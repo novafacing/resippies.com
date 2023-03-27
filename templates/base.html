@@ -15,11 +15,17 @@
                 <tr>
                     <td width="15%" valign="top">
                         <ul>
-                            <li><a href="/">Home</a></li>
+                            {% if auth %}
+                            <li><a href="/identity/{{ auth.id }}">{{ auth.username }}</a></li>
+                            <li><a href="/create_cookbook">New Cookbook</a></li>
+                            <!--<li><a href="/create_recipe">New Recipe</a></li>-->
+                            {% else %}
                             <li><a href="/login">Login</a></li>
                             <li><a href="/register">Register</a></li>
-                        </ul>
+                            {% endif %}
+                            <li><a href="/">Home</a></li>
 
+                        </ul>
                     </td>
                     <td width="85%" valign="top">
                         <div class="content">

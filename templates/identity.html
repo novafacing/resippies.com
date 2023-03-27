@@ -1,0 +1,90 @@
+{% extends "/base" %}
+{% block title %}
+Identity
+{% endblock title %}
+{% block head %}
+{{ super()}}
+{% endblock head %}
+{% block content %}
+{% if auth %}
+<!-- Someone is logged in -->
+{% if auth.id == identity.id %}
+<!-- Viewing own identity -->
+<table>
+    <tr>
+        <td>
+            <b>Id:</b>
+        </td>
+        <td>
+            {{ identity.id }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Username:</b>
+        </td>
+        <td>
+            {{ identity.username }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Email:</b>
+        </td>
+        <td>
+            {{ identity.email }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Verified:</b>
+        </td>
+        <td>
+            {{ identity.verified }}
+        </td>
+    </tr>
+</table>
+{% else %}
+<!-- Viewing someone else's identity -->
+<table>
+    <tr>
+        <td>
+            <b>Id:</b>
+        </td>
+        <td>
+            {{ identity.id }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Username:</b>
+        </td>
+        <td>
+            {{ identity.username }}
+        </td>
+    </tr>
+</table>
+{% endif %}
+{% else %}
+<!-- Not logged in -->
+<table>
+    <tr>
+        <td>
+            <b>Id:</b>
+        </td>
+        <td>
+            {{ identity.id }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <b>Username:</b>
+        </td>
+        <td>
+            {{ identity.username }}
+        </td>
+    </tr>
+</table>
+{% endif %}
+
+{% endblock content %}

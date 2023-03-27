@@ -18,6 +18,7 @@ use crate::{
 
 #[derive(Serialize, Debug)]
 pub struct IndexResponse {
+    auth: Option<Identity>,
     recipes: Vec<Recipe>,
     // Map recipe id to author
     authors: HashMap<Uuid, Option<Identity>>,
@@ -31,7 +32,7 @@ pub struct Pagination {
 }
 
 pub async fn get_index(
-    _auth: AuthCtx,
+    auth: AuthCtx,
     engine: RenderEngine,
     Key(key): Key,
     pagination: Query<Pagination>,
@@ -73,6 +74,7 @@ pub async fn get_index(
         .await;
 
     let response = IndexResponse {
+        auth: auth.current_user,
         recipes,
         authors,
         cookbooks,

@@ -15,16 +15,22 @@ pub struct LoginForm {
 }
 
 #[derive(Serialize, Debug)]
-pub struct LoginResponse {}
+pub struct LoginResponse {
+    auth: Option<Identity>,
+}
 
 pub async fn get_login(auth: AuthCtx, engine: RenderEngine, Key(key): Key) -> impl IntoResponse {
     match auth.current_user {
         Some(_) => {
-            let response = LoginResponse {};
+            let response = LoginResponse {
+                auth: auth.current_user,
+            };
             RenderHtml(key, engine, response)
         }
         None => {
-            let response = LoginResponse {};
+            let response = LoginResponse {
+                auth: auth.current_user,
+            };
             RenderHtml(key, engine, response)
         }
     }

@@ -9,7 +9,7 @@ use axum_template::{Key, RenderHtml};
 use serde::{Deserialize, Serialize};
 use tracing::{debug, error};
 
-use crate::{entity::identity::Identity, render::RenderEngine};
+use crate::{auth::AuthCtx, entity::identity::Identity, render::RenderEngine};
 
 #[derive(Deserialize, Debug)]
 pub struct RegisterForm {
@@ -21,27 +21,20 @@ pub struct RegisterForm {
 
 #[derive(Serialize, Debug)]
 pub struct RegisterResponse {
-    pub error_message: Option<String>,
+    pub auth: Option<Identity>,
 }
 
-impl From<&HashMap<String, String>> for RegisterResponse {
-    fn from(value: &HashMap<String, String>) -> Self {
-        Self {
-            error_message: value.get("error_message").map(|s| s.to_string()),
-        }
-    }
-}
-
-pub async fn get_register(
-    Query(params): Query<HashMap<String, String>>,
-    engine: RenderEngine,
-    Key(key): Key,
-) -> impl IntoResponse {
-    let response = RegisterResponse::from(&params);
+pub async fn get_register(auth: AuthCtx, engine: RenderEngine, Key(key): Key) -> impl IntoResponse {
+    let response = RegisterResponse {
+        auth: auth.current_user,
+    };
     RenderHtml(key, engine, response)
 }
 
-pub async fn post_register(Form(register): Form<RegisterForm>) -> impl IntoResponse {
+pub async fn post_register(
+    _auth: AuthCtx,
+    Form(register): Form<RegisterForm>,
+) -> impl IntoResponse {
     match Identity::from_register_form(register).await {
         Ok(identity) => {
             debug!("Generated identity for {}", identity.username);

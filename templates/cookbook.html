@@ -1,24 +1,26 @@
 {% extends "/base" %}
 {% block title %}
-Home
+Recipe
 {% endblock title %}
 {% block head %}
 {{ super()}}
 {% endblock head %}
 {% block content %}
+<h1>{{ response.cookbook.name }} by <a href="/identity/{{ response.author.id }}">{{ response.author.username }}</a></h1>
 <table width="100%">
     <tbody>
-        {% for recipe in recipes %}
+        {% for recipe in response.recipes %}
         <tr>
-            <td width="15%%">
+            <td width="15%">
                 <a href="/recipe/{{ recipe.id }}">{{ recipe.name }}</a>
                 <br>
-                by <a href="/identity/{{ authors[recipe.id].id }}">{{ authors[recipe.id].username }}</a>
+                by <a href="/identity/{{ response.authors[recipe.id].id }}">{{ response.authors[recipe.id].username
+                    }}</a>
                 <br>
-                {% if cookbooks[recipe.id] | length > 1 %}
+                {% if response.cookbooks[recipe.id] | length > 1 %}
                 from:
                 <ul>
-                    {% for cookbook in cookbooks[recipe.id] %}
+                    {% for cookbook in response.cookbooks[recipe.id] %}
                     <li>
                         <a href="/cookbook/{{ cookbook.id }}">
                             {{ cookbook.name }}
@@ -27,8 +29,9 @@ Home
                     {% endfor %}
                 </ul>
                 {% endif %}
-                {% if cookbooks[recipe.id] | length == 1 %}
-                from <a href="/cookbook/{{ cookbooks[recipe.id][0].id }}">{{ cookbooks[recipe.id][0].name
+                {% if response.cookbooks[recipe.id] | length == 1 %}
+                from <a href="/cookbook/{{ response.cookbooks[recipe.id][0].id }}">{{
+                    response.cookbooks[recipe.id][0].name
                     }}</a>
                 {% endif %}
             </td>
@@ -41,4 +44,5 @@ Home
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock content %}

@@ -1,7 +1,8 @@
-use std::sync::Arc;
-
-use axum::{extract::Path, response::IntoResponse};
-use axum_template::{Key, RenderHtml, TemplateEngine};
+use axum::{
+    extract::Path,
+    response::{IntoResponse, Redirect},
+};
+use axum_template::RenderHtml;
 use futures::StreamExt;
 use serde::Serialize;
 use tracing::debug;
@@ -27,21 +28,22 @@ struct RecipeResponseInner {
 
 #[derive(Serialize, Debug)]
 pub struct RecipeResponse {
+    auth: Option<Identity>,
     id: Uuid,
     response: Option<RecipeResponseInner>,
 }
 
-#[derive(Serialize, Debug)]
-pub struct RecipeNotFoundResponse {
-    recipe_id: Uuid,
-}
-
 pub async fn get_recipe(
-    _auth: AuthCtx,
+    auth: AuthCtx,
     engine: RenderEngine,
     recipe_id: Path<Uuid>,
 ) -> impl IntoResponse {
     if let Ok(Some(recipe)) = Recipe::query_by_id(&recipe_id).await {
+        // Check if this user is authorized to view this recipe
+        if !recipe.can_view(&auth.current_user).await {
+            return Redirect::to("/login").into_response();
+        }
+
         debug!("Loading recipe {}", recipe_id.0);
         let author = Identity::query_by_id(&recipe.author).await.unwrap();
         let cookbooks = Cookbook::query_by_recipe(&recipe_id)
@@ -69,6 +71,7 @@ pub async fn get_recipe(
         debug!("Loaded ingredients: {:?}", ingredients);
 
         let response = RecipeResponse {
+            auth: auth.current_user,
             response: Some(RecipeResponseInner {
                 recipe,
                 author,
@@ -81,13 +84,14 @@ pub async fn get_recipe(
 
         debug!("Rendering recipe {:#?}", response);
 
-        RenderHtml("/recipe", engine, response)
+        RenderHtml("/recipe", engine, response).into_response()
     } else {
         let response = RecipeResponse {
+            auth: auth.current_user,
             response: None,
             id: recipe_id.0,
         };
 
-        RenderHtml("/recipe_not_found", engine, response)
+        RenderHtml("/not_found", engine, response).into_response()
     }
 }
