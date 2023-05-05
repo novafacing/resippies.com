@@ -2,6 +2,7 @@ use crate::{db::connection, handlers::cookbook::CreateCookbookForm, uuid::Uuid};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use sqlx::{query_as, Decode, Encode, FromRow};
+use tracing::debug;
 
 use super::identity::Identity;
 
@@ -36,7 +37,7 @@ impl Cookbook {
         ON cookbooks_recipes.cookbook = cookbooks.id
         WHERE cookbooks_recipes.recipe = ?"#;
     pub const QUERY_SELECT_COOKBOOKS_CONTRIBUTORS: &str =
-        "SELECT * FROM cookbooks_contributors WHERE cookbook = ?";
+        "SELECT contributor FROM cookbooks_contributors WHERE cookbook = ?";
 
     pub const QUERY_PUBLIC_VISIBLE_COOKBOOKS_LIMIT: &str =
         "SELECT * FROM cookbooks WHERE visibility = 'public' ORDER BY created_at DESC LIMIT ? OFFSET ?";
@@ -92,11 +93,13 @@ impl Cookbook {
             .bind(&self.visibility)
             .execute(&mut conn)
             .await?;
+        debug!("Inserted cookbook: {:?}", self);
         sqlx::query(Cookbook::QUERY_INSERT_COOKBOOKS_CONTRIBUTORS)
             .bind(&self.id)
             .bind(&self.author)
             .execute(&mut conn)
             .await?;
+        debug!("Inserted cookbook contributor: {:?}", self);
 
         Ok(())
     }
@@ -122,15 +125,14 @@ impl Cookbook {
             true
         } else if let Some(identity) = identity {
             let mut conn = connection().await.unwrap();
-            let contributors: Vec<Identity> =
-                query_as(Cookbook::QUERY_SELECT_COOKBOOKS_CONTRIBUTORS)
-                    .bind(&self.id)
-                    .fetch_all(&mut conn)
-                    .await
-                    .unwrap();
+            let contributors: Vec<Uuid> = query_as(Cookbook::QUERY_SELECT_COOKBOOKS_CONTRIBUTORS)
+                .bind(&self.id)
+                .fetch_all(&mut conn)
+                .await
+                .unwrap();
             contributors
                 .iter()
-                .any(|contributor| contributor.id == identity.id)
+                .any(|contributor| *contributor == identity.id)
         } else {
             false
         }
@@ -139,15 +141,14 @@ impl Cookbook {
     pub async fn can_edit(&self, identity: &Option<Identity>) -> bool {
         if let Some(identity) = identity {
             let mut conn = connection().await.unwrap();
-            let contributors: Vec<Identity> =
-                query_as(Cookbook::QUERY_SELECT_COOKBOOKS_CONTRIBUTORS)
-                    .bind(&self.id)
-                    .fetch_all(&mut conn)
-                    .await
-                    .unwrap();
+            let contributors: Vec<Uuid> = query_as(Cookbook::QUERY_SELECT_COOKBOOKS_CONTRIBUTORS)
+                .bind(&self.id)
+                .fetch_all(&mut conn)
+                .await
+                .unwrap();
             contributors
                 .iter()
-                .any(|contributor| contributor.id == identity.id)
+                .any(|contributor| *contributor == identity.id)
         } else {
             false
         }

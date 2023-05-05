@@ -1,5 +1,5 @@
 use axum_login::{extractors::AuthContext, SqliteStore};
 
-use crate::entity::identity::Identity;
+use crate::{entity::identity::Identity, uuid::Uuid};
 
-pub type AuthCtx = AuthContext<Identity, SqliteStore<Identity>>;
+pub type AuthCtx = AuthContext<Uuid, Identity, SqliteStore<Identity>>;

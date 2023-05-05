@@ -6,39 +6,53 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="/static/resippies.css" />
     {% endblock head %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the height of the footer element
+            const footer = document.querySelector('#footer');
+            const footerHeight = `${footer.offsetHeight}px`;
+
+            // Set the height of the main container element using a CSS variable
+            document.documentElement.style.setProperty('--footer-height', footerHeight);
+        })
+    </script>
 </head>
 
 <body>
     <div class="container">
-        <table width="100%">
-            <tbody>
-                <tr>
-                    <td width="15%" valign="top">
-                        <ul>
-                            {% if auth %}
-                            <li><a href="/identity/{{ auth.id }}">{{ auth.username }}</a></li>
-                            <li><a href="/create_cookbook">New Cookbook</a></li>
-                            <!--<li><a href="/create_recipe">New Recipe</a></li>-->
-                            {% else %}
-                            <li><a href="/login">Login</a></li>
-                            <li><a href="/register">Register</a></li>
-                            {% endif %}
-                            <li><a href="/">Home</a></li>
+        <div class="main">
+            <table width="100%">
+                <tbody>
+                    <tr>
+                        <td width="15%" valign="top">
+                            <ul>
+                                {% if auth %}
+                                <li><a href="/identity/{{ auth.id }}">{{ auth.username }}</a></li>
+                                <li><a href="/create_recipe">Create Recipe</a></li>
+                                <li><a href="/create_cookbook">Create Cookbook</a></li>
+                                <!--<li><a href="/create_recipe">New Recipe</a></li>-->
+                                <li><a href="/logout">Logout</a></li>
+                                {% else %}
+                                <li><a href="/login">Login</a></li>
+                                <li><a href="/register">Register</a></li>
+                                {% endif %}
+                                <li><a href="/">Home</a></li>
 
-                        </ul>
-                    </td>
-                    <td width="85%" valign="top">
-                        <div class="content">
-                            {% block content %}
-                            {% endblock content %}
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="footer">
+                            </ul>
+                        </td>
+                        <td width="85%" valign="top">
+                            <div class="content">
+                                {% block content %}
+                                {% endblock content %}
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="footer" id="footer"">
             {% block footer %}
-            Made with ❤️ by <a href="https://github.com/novafacing">novafacing</a>.
+            Made with ❤️ by <a href=" https://github.com/novafacing">novafacing</a>.
             {% endblock footer %}
         </div>
 

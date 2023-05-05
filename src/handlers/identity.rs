@@ -21,9 +21,7 @@ pub async fn get_identity(
 ) -> impl IntoResponse {
     debug!("Loading identity page");
 
-    if auth.current_user.is_none() {
-        Redirect::to("/login").into_response()
-    } else if id == auth.current_user.clone().unwrap().id {
+    if auth.current_user.is_some() && id == auth.current_user.clone().unwrap().id {
         let response = IdentityResponse {
             auth: auth.current_user.clone(),
             identity: auth.current_user.unwrap(),

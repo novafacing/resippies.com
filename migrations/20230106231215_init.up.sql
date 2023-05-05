@@ -32,8 +32,7 @@ CREATE TABLE ingredients (
     item TEXT NOT NULL,
     quantity REAL NOT NULL,
     unit TEXT NOT NULL,
-    FOREIGN KEY (item) REFERENCES items (id),
-    UNIQUE (item, quantity, unit)
+    FOREIGN KEY (item) REFERENCES items (id)
 );
 CREATE TABLE steps (
     id TEXT PRIMARY KEY NOT NULL,
@@ -66,7 +65,7 @@ CREATE TABLE recipes_steps (
     -- Recipe UUID
     step TEXT NOT NULL,
     -- Step UUID
-    num INTEGER NOT NULL UNIQUE,
+    num INTEGER NOT NULL,
     -- Step number in the recipe
     PRIMARY KEY (recipe, step),
     FOREIGN KEY (recipe) REFERENCES recipes (id),

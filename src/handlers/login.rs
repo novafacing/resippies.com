@@ -60,3 +60,11 @@ pub async fn post_login(mut auth: AuthCtx, Form(login): Form<LoginForm>) -> impl
         }
     }
 }
+
+pub async fn get_logout(mut auth: AuthCtx) -> impl IntoResponse {
+    debug!("Logging out");
+
+    auth.logout().await;
+
+    Redirect::to("/").into_response()
+}

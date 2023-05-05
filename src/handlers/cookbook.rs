@@ -39,7 +39,6 @@ pub struct CookbookResponse {
 pub struct CreateCookbookForm {
     pub name: String,
     pub description: String,
-    pub contributors: Vec<String>,
     pub visibility: String,
 }
 

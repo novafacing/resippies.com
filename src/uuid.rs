@@ -1,15 +1,21 @@
 use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
-use sqlx::{sqlite::SqliteTypeInfo, Decode, Encode, Sqlite, Type};
+use sqlx::{sqlite::SqliteTypeInfo, Decode, Encode, FromRow, Sqlite, Type};
 use uuid::Uuid as ExtUuid;
 
-#[derive(Eq, PartialEq, Hash, Debug, Clone, Default, Decode, Encode, Serialize, Deserialize)]
+#[derive(
+    Eq, PartialEq, Hash, Debug, Clone, Default, Decode, Encode, Serialize, Deserialize, FromRow,
+)]
 pub struct Uuid(String);
 
 impl Uuid {
     pub fn now_v7() -> Self {
         Uuid(ExtUuid::now_v7().to_string())
+    }
+
+    pub fn nil() -> Self {
+        Uuid(ExtUuid::nil().to_string())
     }
 }
 

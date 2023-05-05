@@ -67,7 +67,9 @@ async fn main() {
 
     // TODO: with_query is called with_table until 4.0.2, this will change to with_query at some point!
     // TODO: let user_store = SqliteStore::<Identity>::new(pool).with_query(QUERY_SELECT_IDENTITY_BY_ID);
-    let user_store = SqliteStore::<Identity>::new(pool).with_table_name(Identity::TABLE_NAME);
+    // let user_store = SqliteStore::<Identity>::new(pool).with_table_name(Identity::TABLE_NAME);
+    let user_store =
+        SqliteStore::<Identity>::new(pool).with_query(Identity::QUERY_SELECT_IDENTITY_BY_ID);
     let auth_layer = AuthLayer::new(user_store, &secret);
 
     let tera = init_templates()
@@ -92,8 +94,13 @@ async fn main() {
             get(handlers::cookbook::get_create_cookbook)
                 .post(handlers::cookbook::post_create_cookbook),
         )
+        .route(
+            "/create_recipe",
+            get(handlers::recipe::get_create_recipe).post(handlers::recipe::post_create_recipe),
+        )
         .route("/identity/:id", get(handlers::identity::get_identity))
         .route("/static/*path", get(static_files::get_static))
+        .route("/logout", get(handlers::login::get_logout))
         .layer(auth_layer)
         .layer(session_layer)
         .layer(TraceLayer::new_for_http())

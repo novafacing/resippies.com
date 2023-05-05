@@ -4,11 +4,23 @@ use sqlx::{query_as, Decode, Encode, FromRow};
 
 use crate::{db::connection, uuid::Uuid};
 
+use super::recipe::Recipe;
+
 #[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode)]
 pub struct Step {
     pub id: Uuid,
     pub name: String,
     pub description: String,
+}
+
+impl Default for Step {
+    fn default() -> Self {
+        Step {
+            id: Uuid::now_v7(),
+            name: String::new(),
+            description: String::new(),
+        }
+    }
 }
 
 impl Step {
@@ -25,6 +37,12 @@ impl Step {
     pub const QUERY_INSERT_STEP: &str = r#"
         INSERT INTO steps
             (id, name, description)
+        VALUES
+            (?, ?, ?);
+        "#;
+    pub const QUERY_INSERT_RECIPES_STEPS: &str = r#"
+        INSERT INTO recipes_steps
+            (recipe, step, num)
         VALUES
             (?, ?, ?);
         "#;
@@ -50,12 +68,18 @@ impl Step {
         Ok(steps)
     }
 
-    pub async fn insert(step: &Step) -> Result<()> {
+    pub async fn insert(&self, recipe: &Recipe, number: u32) -> Result<()> {
         let mut conn = connection().await?;
         sqlx::query(Step::QUERY_INSERT_STEP)
-            .bind(&step.id)
-            .bind(&step.name)
-            .bind(&step.description)
+            .bind(&self.id)
+            .bind(&self.name)
+            .bind(&self.description)
+            .execute(&mut conn)
+            .await?;
+        sqlx::query(Step::QUERY_INSERT_RECIPES_STEPS)
+            .bind(&recipe.id)
+            .bind(&self.id)
+            .bind(number)
             .execute(&mut conn)
             .await?;
 

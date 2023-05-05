@@ -1,0 +1,167 @@
+{% extends "/base" %}
+{% block title %}
+Register
+{% endblock title %}
+{% block head %}
+{{ super()}}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ingredientContainer = document.querySelector("#ingredients");
+        const addIngredientButton = document.querySelector("#add-ingredient");
+
+        let ingredientCount = 1;
+        addIngredientButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            ingredientCount++;
+            const newIngredient = document.createElement("fieldset");
+            const newIngredientLegend = document.createElement("legend");
+            newIngredientLegend.textContent = `Ingredient ${ingredientCount}`;
+            newIngredient.appendChild(newIngredientLegend);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientNameLabel = document.createElement("label");
+            newIngredientNameLabel.for = `ingredient-name`;
+            newIngredientNameLabel.textContent = "Name:";
+            newIngredient.appendChild(newIngredientNameLabel);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientName = document.createElement("input");
+            newIngredientName.type = "text";
+            newIngredientName.name = `ingredient-name`;
+            newIngredientName.placeholder = "Milk";
+            newIngredient.appendChild(newIngredientName);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientDescriptionLabel = document.createElement("label");
+            newIngredientDescriptionLabel.for = `ingredient-description`;
+            newIngredientDescriptionLabel.textContent = "Description:";
+            newIngredient.appendChild(newIngredientDescriptionLabel);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientDescription = document.createElement("input");
+            newIngredientDescription.type = "text";
+            newIngredientDescription.name = `ingredient-description`;
+            newIngredientDescription.placeholder = "Whole is best, but 2% works in a pinch";
+            newIngredient.appendChild(newIngredientDescription);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientQuantityLabel = document.createElement("label");
+            newIngredientQuantityLabel.for = `ingredient-quantity`;
+            newIngredientQuantityLabel.textContent = "Quantity:";
+            newIngredient.appendChild(newIngredientQuantityLabel);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientQuantity = document.createElement("input");
+            newIngredientQuantity.type = "number";
+            newIngredientQuantity.name = `ingredient-quantity`;
+            newIngredientQuantity.placeholder = "2.75";
+            newIngredient.appendChild(newIngredientQuantity);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientUnitLabel = document.createElement("label");
+            newIngredientUnitLabel.for = `ingredient-unit`;
+            newIngredientUnitLabel.textContent = "Unit:";
+            newIngredient.appendChild(newIngredientUnitLabel);
+            newIngredient.appendChild(document.createElement("br"));
+            const newIngredientUnit = document.createElement("input");
+            newIngredientUnit.type = "text";
+            newIngredientUnit.name = `ingredient-unit`;
+            newIngredientUnit.placeholder = "c";
+            newIngredient.appendChild(newIngredientUnit);
+            newIngredient.appendChild(document.createElement("br"));
+            ingredientContainer.appendChild(newIngredient);
+        });
+        const stepContainer = document.querySelector("#steps");
+        const addStepButton = document.querySelector("#add-step");
+
+        let stepCount = 1;
+        addStepButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            stepCount++;
+            const newStep = document.createElement("fieldset");
+            const newStepLegend = document.createElement("legend");
+            newStepLegend.textContent = `Step ${stepCount}`;
+            newStep.appendChild(newStepLegend);
+            newStep.appendChild(document.createElement("br"));
+            const newStepNameLabel = document.createElement("label");
+            newStepNameLabel.for = `step-name`;
+            newStepNameLabel.textContent = "Name:";
+            newStep.appendChild(newStepNameLabel);
+            newStep.appendChild(document.createElement("br"));
+            const newStepName = document.createElement("input");
+            newStepName.type = "text";
+            newStepName.name = `step-name`;
+            newStepName.placeholder = "Heat Milk";
+            newStep.appendChild(newStepName);
+            newStep.appendChild(document.createElement("br"));
+            const newStepDescriptionLabel = document.createElement("label");
+            newStepDescriptionLabel.for = `step-description`;
+            newStepDescriptionLabel.textContent = "Description:";
+            newStep.appendChild(newStepDescriptionLabel);
+            newStep.appendChild(document.createElement("br"));
+            const newStepDescription = document.createElement("textarea");
+            newStepDescription.name = `step-description`;
+            newStepDescription.placeholder = "Place the milk in the microwave in a microwave-safe container (a large Pyrex measuring cup works great!) on high for about 1 minute.";
+            newStepDescription.style = "min-height: 4rem; resize: vertical;";
+            newStep.appendChild(newStepDescription);
+            stepContainer.appendChild(newStep);
+        });
+    });
+
+</script>
+{% endblock head %}
+{% block content %}
+<div class="form">
+    <form action="/create_recipe" method="post">
+        <label for="name">Recipe Name:</label>
+        <input type="text" name="name" placeholder="My Recipe" />
+        <br>
+        <label for="description">Recipe Description:</label>
+        <br>
+        <textarea name="description" style="resize: vertical; min-height: 8rem;"
+            placeholder="My Awesome Recipe Description"></textarea>
+        <label for="visibility">Visibility:</label>
+        <select id="visibility" name="visibility">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </select>
+
+        <div id="ingredients">
+            <fieldset>
+                <legend>Ingredient 1</legend>
+                <label for="ingredient-name">Name:</label>
+                <br>
+                <input type="text" name="ingredient-name" placeholder="Milk" />
+                <br>
+                <label for="ingredient-description">Description:</label>
+                <br>
+                <input type="text" name="ingredient-description" placeholder="Whole is best, but 2% works in a pinch" />
+                <br>
+                <label for="ingredient-quantity">Quantity:</label>
+                <br>
+                <input type="number" name="ingredient-quantity" placeholder="2.75" />
+                <br>
+                <label for="ingredient-unit">Unit:</label>
+                <br>
+                <input type="text" name="ingredient-unit" placeholder="c" />
+            </fieldset>
+        </div>
+
+        <div class="center-button">
+            <button id="add-ingredient">Add Ingredient</button>
+        </div>
+
+        <div id="steps">
+            <fieldset>
+                <legend>Step 1</legend>
+                <label for="step-name">Name:</label>
+                <br>
+                <input type="text" name="step-name" placeholder="Heat Milk" />
+                <br>
+                <label for="step-description">Description:</label>
+                <br>
+                <textarea name="step-description" style="resize: vertical; min-height: 4rem;"
+                    placeholder="Place the milk in the microwave in a microwave-safe container (a large Pyrex measuring cup works great!) on high for about 1 minute."></textarea>
+            </fieldset>
+        </div>
+
+        <div class="center-button">
+            <button id="add-step">Add Step</button>
+            <input type="submit" value="Create!" />
+        </div>
+    </form>
+</div>
+{% endblock content %}

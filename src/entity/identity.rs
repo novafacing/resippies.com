@@ -24,10 +24,10 @@ pub struct Identity {
     pub verified: bool,
 }
 
-impl AuthUser for Identity {
-    fn get_id(&self) -> String {
+impl AuthUser<Uuid> for Identity {
+    fn get_id(&self) -> Uuid {
         // UUID is stored as a string in the database
-        self.id.to_string()
+        self.id.clone()
     }
 
     fn get_password_hash(&self) -> SecretVec<u8> {

@@ -5,6 +5,7 @@
 html {
   height: 100%;
   box-sizing: border-box;
+  font: 100%/1.5 'Roboto', sans-serif;
 }
 
 *,
@@ -25,6 +26,11 @@ ul {
   padding-top: 0.2rem;
 }
 
+.form {
+  margin: 0 auto;
+  width: 70%;
+}
+
 .left-indent {
   margin-left: 2rem;
   margin-top: 0.5rem;
@@ -42,9 +48,18 @@ ul {
   margin: 0 auto;
 }
 
+.main {
+  height: calc(100vh - var(--footer-height)); /* Set the height using a CSS variable */
+  overflow-y: auto; /* Add scrollbars if the content overflows */
+}
+
 .recipe-description {
   width: 60%; /* or any other percentage value */
   margin: 2 auto;
+}
+
+.center-button {
+  text-align: center;
 }
 
 p {
@@ -53,10 +68,45 @@ p {
 }
 
 input {
-  padding: .5rem;
-  border: 1px solid rgb(60, 56, 54);
-  border-radius: 4px;
-  font-size: 16px;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border: 0.1rem solid rgb(60, 56, 54);
+  border-radius: 0.25rem;
+  width: 100%;
+}
+
+label {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  width: 100%;
+}
+
+input[type=submit] {
+  width: 50%;
+
+}
+
+button {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border: 0.1rem solid rgb(60, 56, 54);
+  border-radius: 0.25rem;
+  width: 50%;
+}
+
+fieldset {
+  border: 0.1rem solid rgb(60, 56, 54);
+  border-radius: 0.25rem;
+  padding: 2rem;
+  margin: 0.5rem;
+  width: 100%;
+}
+
+textarea {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border: 0.1rem solid rgb(60, 56, 54);
+  border-radius: 0.25rem;
   width: 100%;
 }
 

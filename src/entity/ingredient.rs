@@ -4,12 +4,25 @@ use sqlx::{query_as, Decode, Encode, FromRow};
 
 use crate::{db::connection, uuid::Uuid};
 
+use super::recipe::Recipe;
+
 #[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode)]
 pub struct Ingredient {
     pub id: Uuid,
     pub item: Uuid,
     pub quantity: f64,
     pub unit: String,
+}
+
+impl Default for Ingredient {
+    fn default() -> Self {
+        Ingredient {
+            id: Uuid::now_v7(),
+            item: Uuid::nil(),
+            quantity: 0.0,
+            unit: String::new(),
+        }
+    }
 }
 
 impl Ingredient {
@@ -27,6 +40,12 @@ impl Ingredient {
             (id, item, quantity, unit)
         VALUES
             (?, ?, ?, ?);
+        "#;
+    pub const QUERY_INSERT_RECIPES_INGREDIENTS: &str = r#"
+        INSERT INTO recipes_ingredients
+            (recipe, ingredient)
+        VALUES
+            (?, ?);
         "#;
 
     pub async fn query_by_id(id: &Uuid) -> Result<Option<Ingredient>> {
@@ -49,5 +68,22 @@ impl Ingredient {
             .expect("Failed to fetch ingredients");
 
         Ok(ingredients)
+    }
+
+    pub async fn insert(&self, recipe: &Recipe) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Ingredient::QUERY_INSERT_INGREDIENT)
+            .bind(&self.id)
+            .bind(&self.item)
+            .bind(&self.quantity)
+            .bind(&self.unit)
+            .execute(&mut conn)
+            .await?;
+        sqlx::query(Ingredient::QUERY_INSERT_RECIPES_INGREDIENTS)
+            .bind(&recipe.id)
+            .bind(&self.id)
+            .execute(&mut conn)
+            .await?;
+        Ok(())
     }
 }

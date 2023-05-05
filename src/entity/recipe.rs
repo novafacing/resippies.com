@@ -20,6 +20,19 @@ pub struct Recipe {
     pub created_at: DateTime<Utc>,
 }
 
+impl Default for Recipe {
+    fn default() -> Self {
+        Self {
+            id: Uuid::now_v7(),
+            author: Uuid::now_v7(),
+            name: String::new(),
+            description: String::new(),
+            visibility: "public".to_string(),
+            created_at: Utc::now(),
+        }
+    }
+}
+
 impl Recipe {
     pub const TABLE_NAME: &str = "recipes";
     pub const QUERY_SELECT_RECIPE_BY_ID: &str = "SELECT * FROM recipes WHERE id = ?";
@@ -38,7 +51,7 @@ impl Recipe {
         "#;
     pub const QUERY_SELECT_RECIPES_BY_COOKBOOK: &str = "SELECT * FROM recipes INNER JOIN cookbooks_recipes ON cookbooks_recipes.recipe = recipes.id WHERE cookbooks_recipes.cookbook = ?";
     pub const QUERY_SELECT_RECIPES_CONTRIBUTORS: &str =
-        "SELECT * FROM recipes_contributors WHERE recipe = ?";
+        "SELECT contributors FROM recipes_contributors WHERE recipe = ?";
 
     pub const QUERY_PUBLIC_VISIBLE_RECIPES_LIMIT: &str =
         "SELECT * FROM recipes WHERE visibility = 'public' ORDER BY created_at DESC LIMIT ? OFFSET ?";
@@ -111,14 +124,14 @@ impl Recipe {
         } else if let Some(identity) = identity {
             // Check if the identity is a contributor to the recipe
             let mut conn = connection().await.unwrap();
-            let contributors: Vec<Identity> = query_as(Recipe::QUERY_SELECT_RECIPES_CONTRIBUTORS)
+            let contributors: Vec<Uuid> = query_as(Recipe::QUERY_SELECT_RECIPES_CONTRIBUTORS)
                 .bind(&self.id)
                 .fetch_all(&mut conn)
                 .await
                 .unwrap();
             contributors
                 .iter()
-                .any(|contributor| contributor.id == identity.id)
+                .any(|contributor| *contributor == identity.id)
         } else {
             false
         }
@@ -128,14 +141,14 @@ impl Recipe {
         if let Some(identity) = identity {
             // Check if the identity is a contributor to the recipe
             let mut conn = connection().await.unwrap();
-            let contributors: Vec<Identity> = query_as(Recipe::QUERY_SELECT_RECIPES_CONTRIBUTORS)
+            let contributors: Vec<Uuid> = query_as(Recipe::QUERY_SELECT_RECIPES_CONTRIBUTORS)
                 .bind(&self.id)
                 .fetch_all(&mut conn)
                 .await
                 .unwrap();
             contributors
                 .iter()
-                .any(|contributor| contributor.id == identity.id)
+                .any(|contributor| *contributor == identity.id)
         } else {
             false
         }

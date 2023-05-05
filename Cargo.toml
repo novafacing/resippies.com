@@ -11,34 +11,35 @@ version = "0.8.5"
 features = ["min_const_gen"]
 
 [dependencies]
-anyhow = "1.0.68"
-axum = "0.6.1"
-axum-macros = "0.3.0"
+anyhow = "1.0.71"
+axum = "0.6.18"
+axum-macros = "0.3.7"
 base64 = "0.21.0"
 tower = "0.4.13"
-serde = "1.0.152"
-tera = "1.17.1"
-futures = "0.3.25"
+serde = "1.0.161"
+tera = "1.18.1"
+futures = "0.3.28"
 tracing = "0.1.37"
 mime_guess = "2.0.4"
 include_dir = "0.7.3"
-http = "0.2.8"
+http = "0.2.9"
 pwhash = "1.0.0"
-regex = "1.7.0"
+regex = "1.8.1"
 lazy_static = "1.4.0"
-dotenvy = "0.15.6"
-dotenvy_macro = "0.15.1"
+dotenvy = "0.15.7"
+dotenvy_macro = "0.15.7"
+axum-extra = { version = "0.7.4", features = ["form"] }
 
 [dependencies.axum-login]
-version = "0.4.1"
+version = "0.5.0"
 features = ["sqlite"]
 
 [dependencies.axum-template]
-version = "0.11.0"
+version = "0.16.0"
 features = ["tera"]
 
 [dependencies.sqlx]
-version = "0.6.2"
+version = "0.6.3"
 default-features = false
 features = [
     "runtime-tokio-rustls",
@@ -51,11 +52,11 @@ features = [
 ]
 
 [dependencies.tokio]
-version = "1.23.0"
+version = "1.28.0"
 features = ["full"]
 
 [dependencies.hyper]
-version = "1.0.0-rc.1"
+version = "0.14.26"
 features = ["full"]
 
 [dependencies.rand]
@@ -63,13 +64,13 @@ version = "0.8.5"
 features = ["min_const_gen"]
 
 [dependencies.tracing-subscriber]
-version = "0.3.16"
+version = "0.3.17"
 features = ["env-filter"]
 
 [dependencies.tower-http]
-version = "0.3.5"
+version = "0.4.0"
 features = ["trace"]
 
 [dependencies.uuid]
-version = "1.2.2"
+version = "1.3.2"
 features = ["v7", "std"]

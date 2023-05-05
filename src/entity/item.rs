@@ -11,6 +11,16 @@ pub struct Item {
     pub description: String,
 }
 
+impl Default for Item {
+    fn default() -> Self {
+        Item {
+            id: Uuid::now_v7(),
+            name: String::new(),
+            description: String::new(),
+        }
+    }
+}
+
 impl Item {
     pub const TABLE_NAME: &str = "items";
     pub const QUERY_SELECT_ITEM_BY_ID: &str = "SELECT * FROM items WHERE id = ?";
@@ -32,12 +42,12 @@ impl Item {
         Ok(item)
     }
 
-    pub async fn insert(item: &Item) -> Result<()> {
+    pub async fn insert(&self) -> Result<()> {
         let mut conn = connection().await?;
         sqlx::query(Item::QUERY_INSERT_ITEM)
-            .bind(&item.id)
-            .bind(&item.name)
-            .bind(&item.description)
+            .bind(&self.id)
+            .bind(&self.name)
+            .bind(&self.description)
             .execute(&mut conn)
             .await?;
 

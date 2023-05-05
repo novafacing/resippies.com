@@ -6,7 +6,7 @@ Register
 {{ super()}}
 {% endblock head %}
 {% block content %}
-<div style="margin: 0 auto; width: 40%;">
+<div class="form">
     <form action="/login" method="post">
         <label for="username">Username:</label>
         <input type="text" name="username" id="username" placeholder="Username">
@@ -14,7 +14,9 @@ Register
         <label for="password">Password:</label>
         <input type="password" name="password" placeholder="Password" />
         <br>
-        <input type="submit" value="Login!" />
+        <div class="center-button">
+            <input type="submit" value="Login!" />
+        </div>
     </form>
 </div>
 {% endblock content %}
