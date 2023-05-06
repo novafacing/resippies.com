@@ -6,7 +6,7 @@ use crate::{db::connection, uuid::Uuid};
 
 use super::recipe::Recipe;
 
-#[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode)]
+#[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode, Clone)]
 pub struct Ingredient {
     pub id: Uuid,
     pub item: Uuid,
@@ -47,7 +47,21 @@ impl Ingredient {
         VALUES
             (?, ?);
         "#;
+    pub const QUERY_DELETE_INGREDIENTS_BY_RECIPE: &str = r#"
+        DELETE FROM ingredients
+        WHERE id IN (
+            SELECT ingredient FROM recipes_ingredients WHERE recipe = ?
+        );
+        DELETE FROM recipes_ingredients WHERE recipe = ?;
+        "#;
+    pub const QUERY_UPDATE_INGREDIENT_BY_ID: &str = r#"
+        UPDATE ingredients
+        SET item = ?, quantity = ?, unit = ?
+        WHERE id = ?;
+        "#;
+}
 
+impl Ingredient {
     pub async fn query_by_id(id: &Uuid) -> Result<Option<Ingredient>> {
         let mut conn = connection().await?;
         let ingredient: Option<Ingredient> = query_as(Ingredient::QUERY_SELECT_INGREDIENT_BY_ID)
@@ -81,6 +95,28 @@ impl Ingredient {
             .await?;
         sqlx::query(Ingredient::QUERY_INSERT_RECIPES_INGREDIENTS)
             .bind(&recipe.id)
+            .bind(&self.id)
+            .execute(&mut conn)
+            .await?;
+        Ok(())
+    }
+
+    pub async fn delete_by_recipe(recipe: &Recipe) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Ingredient::QUERY_DELETE_INGREDIENTS_BY_RECIPE)
+            .bind(&recipe.id)
+            .bind(&recipe.id)
+            .execute(&mut conn)
+            .await?;
+        Ok(())
+    }
+
+    pub async fn update(&self) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Ingredient::QUERY_UPDATE_INGREDIENT_BY_ID)
+            .bind(&self.item)
+            .bind(&self.quantity)
+            .bind(&self.unit)
             .bind(&self.id)
             .execute(&mut conn)
             .await?;

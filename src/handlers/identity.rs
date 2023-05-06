@@ -1,12 +1,8 @@
-use axum::{
-    extract::Path,
-    response::{IntoResponse, Redirect},
-};
-use axum_template::{Key, RenderHtml};
+use crate::{auth::AuthCtx, entity::identity::Identity, render::RenderEngine, uuid::Uuid};
+use axum::{extract::Path, response::IntoResponse};
+use axum_template::RenderHtml;
 use serde::Serialize;
 use tracing::debug;
-
-use crate::{auth::AuthCtx, entity::identity::Identity, render::RenderEngine, uuid::Uuid};
 
 #[derive(Serialize, Debug)]
 pub struct IdentityResponse {

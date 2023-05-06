@@ -45,4 +45,17 @@ Recipe
     </li>
     {% endfor %}
 </ol>
+{% if auth %}
+{% if auth.id == response.author.id %}
+<div class="center-button">
+    <!-- Edit and Delete Buttons -->
+    <a href="/edit_recipe/{{ response.recipe.id }}">
+        <button>Edit</button>
+    </a>
+    <a href="/delete_recipe/{{ response.recipe.id }}">
+        <button>Delete</button>
+    </a>
+</div>
+{% endif %}
+{% endif %}
 {% endblock content %}

@@ -12,7 +12,10 @@ mod uuid;
 #[macro_use]
 extern crate lazy_static;
 
-use axum::{routing::get, Router, Server};
+use axum::{
+    routing::{delete, get},
+    Router, Server,
+};
 use axum_login::{
     axum_sessions::{async_session::MemoryStore, SessionLayer},
     AuthLayer, SqliteStore,
@@ -47,7 +50,7 @@ const PORT: u16 = 80;
 async fn main() {
     registry()
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-            "resippies_com=debug,tower_http=debug,axum_login=debug,axum_template=debug".into()
+            "resippies_com=debug,tower_http=debug,axum_login=debug,axum_template=debug,tera=debug".into()
         }))
         .with(layer())
         .init();
@@ -97,6 +100,14 @@ async fn main() {
         .route(
             "/create_recipe",
             get(handlers::recipe::get_create_recipe).post(handlers::recipe::post_create_recipe),
+        )
+        .route(
+            "/delete_recipe/:id",
+            get(handlers::recipe::get_delete_recipe).delete(handlers::recipe::delete_delete_recipe),
+        )
+        .route(
+            "/edit_recipe/:id",
+            get(handlers::recipe::get_edit_recipe).post(handlers::recipe::post_edit_recipe),
         )
         .route("/identity/:id", get(handlers::identity::get_identity))
         .route("/static/*path", get(static_files::get_static))

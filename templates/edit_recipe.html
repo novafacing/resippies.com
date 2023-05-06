@@ -1,6 +1,6 @@
 {% extends "/base" %}
 {% block title %}
-Register
+Edit Recipe
 {% endblock title %}
 {% block head %}
 {{ super()}}
@@ -9,7 +9,7 @@ Register
         const ingredientContainer = document.querySelector("#ingredients");
         const addIngredientButton = document.querySelector("#add-ingredient");
 
-        let ingredientCount = 1;
+        let ingredientCount = Number("{{ response.ingredients | length }}");
         addIngredientButton.addEventListener("click", (event) => {
             event.preventDefault();
             ingredientCount++;
@@ -67,7 +67,7 @@ Register
         const stepContainer = document.querySelector("#steps");
         const addStepButton = document.querySelector("#add-step");
 
-        let stepCount = 1;
+        let stepCount = Number("{{ response.steps | length }}");
         addStepButton.addEventListener("click", (event) => {
             event.preventDefault();
             stepCount++;
@@ -105,15 +105,14 @@ Register
 {% endblock head %}
 {% block content %}
 <div class="form">
-    <form action="/create_recipe" method="post">
+    <form action="/edit_recipe/{{ response.recipe.id }}" method="post">
         <label for="name">Recipe Name:</label>
-        <input type="text" name="name" placeholder="My Recipe" />
+        <input type="text" name="name" value="{{ response.recipe.name }}" />
         <br>
-        <label for="description">Recipe Description:</label>
+        <label for=" description">Recipe Description:</label>
         <br>
-        <textarea name="description" style="resize: vertical; min-height: 8rem;"
-            placeholder="My Awesome Recipe Description"></textarea>
-
+        <textarea name="description"
+            style="resize: vertical; min-height: 8rem;">{{ response.recipe.description }}</textarea>
         <table width="100%">
             <tr>
                 <td style="width: 30%;">
@@ -132,8 +131,13 @@ Register
             {% for cookbook in cookbooks %}
             <tr>
                 <td style="width: 30%;">
+                    {% if response.cookbooks is containing(cookbook) %}
+                    <input type="checkbox" id="{{ cookbook.name }}-{{ loop.index }}" name="cookbook"
+                        value="{{ cookbook.id }}" checked />
+                    {% else %}
                     <input type="checkbox" id="{{ cookbook.name }}-{{ loop.index }}" name="cookbook"
                         value="{{ cookbook.id }}" />
+                    {% endif %}
                 </td>
                 <td style="width: 70%;">
                     <label for="{{ cookbook.name }}-{{ loop.index }}">{{ cookbook.name }}</label>
@@ -143,26 +147,29 @@ Register
         </table>
 
 
-        <br>
         <div id="ingredients">
+            {% for ingredient_item in response.ingredients %}
+            {% set ingredient = ingredient_item[0] %}
+            {% set item = ingredient_item[1] %}
             <fieldset>
-                <legend>Ingredient 1</legend>
+                <legend>Ingredient {{ loop.index }}</legend>
                 <label for="ingredient-name">Name:</label>
                 <br>
-                <input type="text" name="ingredient-name" placeholder="Milk" />
+                <input type="text" name="ingredient-name" value="{{ item.name }}" />
                 <br>
                 <label for="ingredient-description">Description:</label>
                 <br>
-                <input type="text" name="ingredient-description" placeholder="Whole is best, but 2% works in a pinch" />
+                <input type="text" name="ingredient-description" value="{{ item.description }}" />
                 <br>
                 <label for="ingredient-quantity">Quantity:</label>
                 <br>
-                <input type="number" name="ingredient-quantity" placeholder="2.75" />
+                <input type="number" name="ingredient-quantity" value="{{ ingredient.quantity }}" />
                 <br>
                 <label for="ingredient-unit">Unit:</label>
                 <br>
-                <input type="text" name="ingredient-unit" placeholder="c" />
+                <input type="text" name="ingredient-unit" value="{{ ingredient.unit }}" />
             </fieldset>
+            {% endfor %}
         </div>
 
         <div class="center-button">
@@ -170,22 +177,24 @@ Register
         </div>
 
         <div id="steps">
+            {% for step in response.steps %}
             <fieldset>
-                <legend>Step 1</legend>
+                <legend>Step {{ loop.index }}</legend>
                 <label for="step-name">Name:</label>
                 <br>
-                <input type="text" name="step-name" placeholder="Heat Milk" />
+                <input type="text" name="step-name" value="{{ step.name }}" />
                 <br>
                 <label for="step-description">Description:</label>
                 <br>
-                <textarea name="step-description" style="resize: vertical; min-height: 4rem;"
-                    placeholder="Place the milk in the microwave in a microwave-safe container (a large Pyrex measuring cup works great!) on high for about 1 minute."></textarea>
+                <textarea name="step-description"
+                    style="resize: vertical; min-height: 4rem;">{{ step.description }}</textarea>
             </fieldset>
+            {% endfor %}
         </div>
 
         <div class="center-button">
             <button id="add-step">Add Step</button>
-            <input type="submit" value="Create!" />
+            <input type="submit" value="Update!" />
         </div>
     </form>
 </div>

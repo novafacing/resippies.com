@@ -6,7 +6,7 @@ use crate::{db::connection, uuid::Uuid};
 
 use super::recipe::Recipe;
 
-#[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode)]
+#[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode, Clone)]
 pub struct Step {
     pub id: Uuid,
     pub name: String,
@@ -46,7 +46,23 @@ impl Step {
         VALUES
             (?, ?, ?);
         "#;
+    pub const QUERY_UPDATE_STEP_BY_ID: &str = r#"
+        UPDATE steps
+        SET name = ?, description = ?
+        WHERE id = ?;
+        "#;
 
+    // Query to remove all steps from a recipe and remove all the entries in recipes_steps for the recipe
+    pub const QUERY_DELETE_STEPS_BY_RECIPE: &str = r#"
+        DELETE FROM steps
+        WHERE id IN (
+            SELECT step FROM recipes_steps WHERE recipe = ?
+        );
+        DELETE FROM recipes_steps WHERE recipe = ?;
+        "#;
+}
+
+impl Step {
     pub async fn query_by_id(id: &Uuid) -> Result<Option<Step>> {
         let mut conn = connection().await?;
         let step: Option<Step> = query_as(Step::QUERY_SELECT_STEP_BY_ID)
@@ -80,6 +96,29 @@ impl Step {
             .bind(&recipe.id)
             .bind(&self.id)
             .bind(number)
+            .execute(&mut conn)
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn update(&self) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Step::QUERY_UPDATE_STEP_BY_ID)
+            .bind(&self.name)
+            .bind(&self.description)
+            .bind(&self.id)
+            .execute(&mut conn)
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn delete_by_recipe(recipe: &Recipe) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Step::QUERY_DELETE_STEPS_BY_RECIPE)
+            .bind(&recipe.id)
+            .bind(&recipe.id)
             .execute(&mut conn)
             .await?;
 

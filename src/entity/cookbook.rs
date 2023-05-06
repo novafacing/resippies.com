@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 use sqlx::{query_as, Decode, Encode, FromRow};
 use tracing::debug;
 
-use super::identity::Identity;
+use super::{identity::Identity, recipe::Recipe};
 
-#[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode)]
+#[derive(FromRow, Debug, Serialize, Deserialize, Encode, Decode, Clone)]
 pub struct Cookbook {
     pub id: Uuid,
     pub author: Uuid,
@@ -14,6 +14,14 @@ pub struct Cookbook {
     pub description: String,
     pub visibility: String,
 }
+
+impl PartialEq for Cookbook {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Eq for Cookbook {}
 
 impl Cookbook {
     pub const TABLE_NAME: &str = "cookbooks";
@@ -42,6 +50,14 @@ impl Cookbook {
     pub const QUERY_PUBLIC_VISIBLE_COOKBOOKS_LIMIT: &str =
         "SELECT * FROM cookbooks WHERE visibility = 'public' ORDER BY created_at DESC LIMIT ? OFFSET ?";
 
+    pub const QUERY_DELETE_RECIPE_FROM_COOKBOOK: &str =
+        "DELETE FROM cookbooks_recipes WHERE cookbook = ? AND recipe = ?";
+
+    pub const QUERY_INSERT_RECIPE_TO_COOKBOOK: &str =
+        "INSERT INTO cookbooks_recipes (cookbook, recipe) VALUES (?, ?)";
+}
+
+impl Cookbook {
     pub async fn query_by_id(id: &Uuid) -> Result<Option<Cookbook>> {
         let mut conn = connection().await?;
         let cookbook: Option<Cookbook> = query_as(Cookbook::QUERY_SELECT_COOKBOOK_BY_ID)
@@ -100,6 +116,28 @@ impl Cookbook {
             .execute(&mut conn)
             .await?;
         debug!("Inserted cookbook contributor: {:?}", self);
+
+        Ok(())
+    }
+
+    pub async fn remove_recipe(&self, recipe: &Recipe) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Cookbook::QUERY_DELETE_RECIPE_FROM_COOKBOOK)
+            .bind(&self.id)
+            .bind(&recipe.id)
+            .execute(&mut conn)
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn add_recipe(&self, recipe: &Recipe) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Cookbook::QUERY_INSERT_RECIPE_TO_COOKBOOK)
+            .bind(&self.id)
+            .bind(&recipe.id)
+            .execute(&mut conn)
+            .await?;
 
         Ok(())
     }

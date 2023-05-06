@@ -9,7 +9,9 @@ use axum::{
 };
 use axum_template::{Key, RenderHtml};
 use futures::StreamExt;
+use inventory::submit;
 use serde::{Deserialize, Serialize};
+use tera::{to_value, Function, Value};
 use tracing::debug;
 
 use crate::{

@@ -1,0 +1,15 @@
+[env]
+DB_NAME = "resippies.com.sqlite"
+DB_PATH = "${PROJECT_DIR}/db/${DB_NAME}"
+PROJECT_DIR = { script = ["pwd"] }
+CARGO_TARGET_DIR = { value = "${PROJECT_DIR}/target", condition = { env_not_set = [
+    "CARGO_TARGET_DIR",
+] } }
+
+[tasks.reset_db]
+command = "sqlx"
+args = ["database", "reset", "-y"]
+
+[tasks.setup_db]
+command = "sqlx"
+args = ["database", "setup"]

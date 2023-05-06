@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::{fmt::Display, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 use sqlx::{sqlite::SqliteTypeInfo, Decode, Encode, FromRow, Sqlite, Type};
@@ -16,6 +16,14 @@ impl Uuid {
 
     pub fn nil() -> Self {
         Uuid(ExtUuid::nil().to_string())
+    }
+}
+
+impl FromStr for Uuid {
+    type Err = uuid::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Uuid(ExtUuid::parse_str(s)?.to_string()))
     }
 }
 

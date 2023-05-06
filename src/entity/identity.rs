@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     db::connection,
     handlers::login::LoginForm,
@@ -9,7 +11,7 @@ use crate::{
 };
 use anyhow::{anyhow, Context, Result};
 use axum_login::{secrecy::SecretVec, AuthUser};
-use serde::{Deserialize, Serialize};
+use serde::{ser::SerializeStruct, Deserialize, Serialize};
 use sqlx::{query, query_as};
 use sqlx::{Encode, FromRow, Type};
 use tracing::debug;
