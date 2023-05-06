@@ -13,3 +13,9 @@ args = ["database", "reset", "-y"]
 [tasks.setup_db]
 command = "sqlx"
 args = ["database", "setup"]
+
+[tasks.test_db]
+script_runner = "@shell"
+script = '''
+sqlite3 ${DB_PATH} < ${PROJECT_DIR}/dtest_data/data.sql
+'''
