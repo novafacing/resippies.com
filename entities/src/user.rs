@@ -26,19 +26,19 @@ pub enum Relation {
 
 impl Related<super::cookbook::Entity> for Entity {
     fn to() -> RelationDef {
-        super::cookbook_contributors::Relation::Cookbook.def()
+        super::cookbook_contributor::Relation::Cookbook.def()
     }
     fn via() -> Option<RelationDef> {
-        Some(super::cookbook_contributors::Relation::User.def().rev())
+        Some(super::cookbook_contributor::Relation::User.def().rev())
     }
 }
 
 impl Related<super::recipe::Entity> for Entity {
     fn to() -> RelationDef {
-        super::recipe_contributors::Relation::Recipe.def()
+        super::recipe_contributor::Relation::Recipe.def()
     }
     fn via() -> Option<RelationDef> {
-        Some(super::recipe_contributors::Relation::User.def().rev())
+        Some(super::recipe_contributor::Relation::User.def().rev())
     }
 }
 

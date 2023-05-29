@@ -1,0 +1,52 @@
+[env]
+DB_NAME = "resippies.com.sqlite"
+DB_PATH = "${PROJECT_DIR}/db/${DB_NAME}"
+PROJECT_DIR = { script = ["pwd"] }
+CARGO_TARGET_DIR = { value = "${PROJECT_DIR}/target", condition = { env_not_set = [
+    "CARGO_TARGET_DIR",
+] } }
+# TODO
+SCHEMA = "${PROJECT_DIR}/schema/schema.sql"
+
+[tasks.setup-env]
+script_runner = "@rust"
+script = '''
+//! ```cargo
+//! [dependencies]
+//! rand = "*"
+//! base64 = "*"
+//! ```
+
+use std::{io::Write, path::Path, fs::OpenOptions};
+use rand::{thread_rng, Rng};
+use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
+
+fn main() {
+    if !Path::new(".env").exists() {
+        let secret: Vec<u8> = (0..512).map(|_| thread_rng().gen()).collect();
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(format!("{}/.env", env!("PROJECT_DIR")))
+            .expect("Failed to open .env file");
+
+        let encoded = BASE64_STANDARD_NO_PAD.encode(&secret);
+
+        writeln!(file, "SECRET_KEY={}", encoded).expect("Failed to write to .env file");
+        writeln!(file, "DATABASE_URL=sqlite://{}", env!("DB_PATH")).expect("Failed to write to .env file");
+    }
+}
+'''
+
+[tasks.setup-db]
+script_runner = '@shell'
+script = '''
+if [ ! -f "${DB_PATH}" ]; then
+    sqlite3 "${DB_PATH}" "VACUUM;"
+fi
+'''
+
+[tasks.migrate-db]
+command = "cargo"
+args = ["run", "--manifest-path", "${PROJECT_DIR}/migration/Cargo.toml", "up"]
+dependencies = ["setup-env", "setup-db"]

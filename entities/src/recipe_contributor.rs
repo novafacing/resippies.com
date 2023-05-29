@@ -4,11 +4,11 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(table_name = "cookbook_contributors")]
+#[sea_orm(table_name = "recipe_contributor")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     #[serde(skip_deserializing)]
-    pub cookbook: String,
+    pub recipe: String,
     #[sea_orm(primary_key, auto_increment = false)]
     #[serde(skip_deserializing)]
     pub contributor: String,
@@ -17,13 +17,13 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::cookbook::Entity",
-        from = "Column::Cookbook",
-        to = "super::cookbook::Column::Id",
+        belongs_to = "super::recipe::Entity",
+        from = "Column::Recipe",
+        to = "super::recipe::Column::Id",
         on_update = "Cascade",
         on_delete = "Cascade"
     )]
-    Cookbook,
+    Recipe,
     #[sea_orm(
         belongs_to = "super::user::Entity",
         from = "Column::Contributor",
@@ -34,9 +34,9 @@ pub enum Relation {
     User,
 }
 
-impl Related<super::cookbook::Entity> for Entity {
+impl Related<super::recipe::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Cookbook.def()
+        Relation::Recipe.def()
     }
 }
 

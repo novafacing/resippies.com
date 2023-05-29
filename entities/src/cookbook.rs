@@ -38,10 +38,10 @@ impl Related<super::recipe::Entity> for Entity {
 
 impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
-        super::cookbook_contributors::Relation::User.def()
+        super::cookbook_contributor::Relation::User.def()
     }
     fn via() -> Option<RelationDef> {
-        Some(super::cookbook_contributors::Relation::Cookbook.def().rev())
+        Some(super::cookbook_contributor::Relation::Cookbook.def().rev())
     }
 }
 

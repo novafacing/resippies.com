@@ -3,10 +3,10 @@
 pub mod prelude;
 
 pub mod cookbook;
-pub mod cookbook_contributors;
+pub mod cookbook_contributor;
 pub mod cookbook_recipe;
 pub mod ingredient;
 pub mod recipe;
-pub mod recipe_contributors;
+pub mod recipe_contributor;
 pub mod step;
 pub mod user;
