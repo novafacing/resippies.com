@@ -1,0 +1,14 @@
+[env]
+CURRENT_DIR = { script = ["pwd"] }
+SCHEMA="${CURRENT_DIR}/../schema/schema.sql"
+
+[tasks.generate]
+script_runner = "@shell"
+script = '''
+NAME=$(mktemp -u db.XXXXXXXX)
+sqlite3 "${NAME}" < "${SCHEMA}"
+sea-orm-cli generate entity -u "sqlite://${NAME}" --with-serde both \
+    --with-copy-enums --serde-skip-deserializing-primary-key -l -o src/ \
+    --compact-format
+rm "${NAME}"
+'''
