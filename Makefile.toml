@@ -1,6 +1,7 @@
 [env]
 DB_NAME = "resippies.com.sqlite"
 DB_PATH = "${PROJECT_DIR}/db/${DB_NAME}"
+SESSION_DB_NAME = "sessions.resippies.com.sqlite"
 PROJECT_DIR = { script = ["pwd"] }
 CARGO_TARGET_DIR = { value = "${PROJECT_DIR}/target", condition = { env_not_set = [
     "CARGO_TARGET_DIR",

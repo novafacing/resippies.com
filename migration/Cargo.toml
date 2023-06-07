@@ -10,5 +10,8 @@ path = "src/lib.rs"
 
 [dependencies]
 entities = { workspace = true }
-sea-orm-migration = { workspace = true, features = ["runtime-tokio-rustls", "sqlx-sqlite"] }
+sea-orm-migration = { workspace = true, features = [
+    "runtime-tokio-rustls",
+    "sqlx-sqlite",
+] }
 tokio = { workspace = true, features = ["full"] }

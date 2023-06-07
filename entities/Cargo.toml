@@ -6,8 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.71"
+axum_session_auth = { version = "0.2.1", features = ["sqlite-rustls"] }
+chrono = "0.4.24"
 sea-orm = { workspace = true }
 serde = { version = "1.0.163", features = ["derive"] }
+sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "sqlite", "uuid"] }
+util = { version = "0.1.0", path = "../util" }
 
 [dev-dependencies]
 tokio = { version = "1.28.2", features = ["full"] }

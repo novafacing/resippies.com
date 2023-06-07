@@ -1,0 +1,41 @@
+[package]
+name = "resippies"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.71"
+axum = "0.6.18"
+axum-extra = "0.7.4"
+axum-macros = "0.3.7"
+axum-template = { version = "0.17.0", features = ["tera"] }
+dotenvy_macro = "0.15.7"
+lazy_static = "1.4.0"
+pwhash = "1.0.0"
+rand = "0.8.5"
+regex = "1.8.3"
+sea-orm = { workspace = true }
+serde = { version = "1.0.163", features = ["derive"] }
+tokio = { workspace = true }
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
+uuid = { version = "1.3.3", features = ["v7", "std"] }
+entities = { workspace = true }
+migration = { version = "0.1.0", path = "../migration" }
+service = { version = "0.1.0", path = "../service" }
+include_dir = "0.7.3"
+mime_guess = "2.0.4"
+http = "0.2.9"
+tera = "1.18.1"
+eyre = "0.6.8"
+base64 = "0.21.2"
+tower-http = { version = "0.4.0", features = ["fs", "trace"] }
+axum_session = { version = "0.2.3", features = ["sqlite-rustls"] }
+axum_session_auth = { version = "0.2.1", features = ["sqlite-rustls"] }
+sqlx = { version = "0.6.3", features = [
+    "runtime-tokio-rustls",
+    "sqlite",
+    "uuid",
+] }
