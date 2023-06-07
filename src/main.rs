@@ -28,7 +28,7 @@ use render::RenderState;
 use sqlx::sqlite::SqlitePoolOptions;
 use templates::init_templates;
 use tower_http::trace::TraceLayer;
-use tracing::debug;
+use tracing::{debug, info};
 use tracing_subscriber::{
     fmt::layer, prelude::__tracing_subscriber_SubscriberExt, registry, util::SubscriberInitExt,
     EnvFilter,
@@ -50,7 +50,7 @@ const PORT: u16 = 80;
 async fn main() {
     registry()
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-            "resippies_com=debug,tower_http=debug,axum_login=debug,axum_template=debug,tera=debug".into()
+            "resippies_com=debug,tower_http=debug,axum_login=debug,axum_template=debug,tera=debug,sqlx=debug".into()
         }))
         .with(layer())
         .init();

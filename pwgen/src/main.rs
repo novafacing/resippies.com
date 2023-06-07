@@ -1,20 +1,9 @@
-use anyhow::{Context, Result};
-use pwhash::{
-    sha512_crypt::{hash_with, verify},
-    HashSetup,
-};
+use anyhow::{ensure, Context, Result};
+use pwhash::bcrypt::{hash, verify};
 use std::io::stdin;
 
-const HASH_PARAMS: HashSetup = HashSetup {
-    salt: None,
-    rounds: Some(10000),
-};
-
 pub fn hash_password(password: &str) -> Result<String> {
-    Ok(
-        hash_with(HASH_PARAMS, password)
-            .context("Password could not be hashed for some reason.")?,
-    )
+    Ok(hash(password).context("Password could not be hashed for some reason.")?)
 }
 
 pub fn validate_password(password: &str, hash: &str) -> bool {
@@ -25,6 +14,11 @@ fn main() -> Result<()> {
     // Read line from stdin
     let mut password = String::new();
     stdin().read_line(&mut password).unwrap();
-    println!("{}", hash_password(&password)?);
+    let hashed = hash_password(&password)?;
+    println!("{}", hashed);
+    ensure!(
+        validate_password(&password, &hashed),
+        "Password does not match"
+    );
     Ok(())
 }

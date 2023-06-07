@@ -37,6 +37,10 @@ impl Item {
         SET name = ?, description = ?
         WHERE id = ?;
         "#;
+    pub const QUERY_DELETE_ITEM_BY_ID: &str = r#"
+        DELETE FROM items
+        WHERE id = ?;
+        "#;
 }
 
 impl Item {
@@ -80,6 +84,16 @@ impl Item {
         sqlx::query(Item::QUERY_UPDATE_ITEM_BY_ID)
             .bind(&self.name)
             .bind(&self.description)
+            .bind(&self.id)
+            .execute(&mut conn)
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn delete(&self) -> Result<()> {
+        let mut conn = connection().await?;
+        sqlx::query(Item::QUERY_DELETE_ITEM_BY_ID)
             .bind(&self.id)
             .execute(&mut conn)
             .await?;

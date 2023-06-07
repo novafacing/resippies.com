@@ -1,16 +1,8 @@
 use anyhow::{Context, Result};
-use pwhash::{
-    sha512_crypt::{hash_with, verify},
-    HashSetup,
-};
-
-const HASH_PARAMS: HashSetup = HashSetup {
-    salt: None,
-    rounds: Some(10000),
-};
+use pwhash::bcrypt::{hash, verify};
 
 pub fn hash_password(password: &str) -> Result<String> {
-    hash_with(HASH_PARAMS, password).context("Password could not be hashed for some reason.")
+    hash(password).context("Password could not be hashed for some reason.")
 }
 
 pub fn validate_password(password: &str, hash: &str) -> bool {

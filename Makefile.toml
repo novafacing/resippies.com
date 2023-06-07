@@ -6,6 +6,36 @@ CARGO_TARGET_DIR = { value = "${PROJECT_DIR}/target", condition = { env_not_set 
     "CARGO_TARGET_DIR",
 ] } }
 
+[tasks.setup_env]
+script_runner = "@rust"
+script = '''
+//! ```cargo
+//! [dependencies]
+//! rand = "*"
+//! base64 = "*"
+//! ```
+
+use std::{io::Write, path::Path, fs::OpenOptions};
+use rand::{thread_rng, Rng};
+use base64::{prelude::BASE64_STANDARD_NO_PAD, Engine};
+
+fn main() {
+    if !Path::new(".env").exists() {
+        let secret: Vec<u8> = (0..512).map(|_| thread_rng().gen()).collect();
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(format!("{}/.env", env!("PROJECT_DIR")))
+            .expect("Failed to open .env file");
+
+        let encoded = BASE64_STANDARD_NO_PAD.encode(&secret);
+
+        writeln!(file, "SECRET_KEY={}", encoded).expect("Failed to write to .env file");
+        writeln!(file, "DATABASE_URL=sqlite://{}", env!("DB_PATH")).expect("Failed to write to .env file");
+    }
+}
+'''
+
 [tasks.reset_db]
 command = "sqlx"
 args = ["database", "reset", "-y"]
@@ -17,5 +47,10 @@ args = ["database", "setup"]
 [tasks.test_db]
 script_runner = "@shell"
 script = '''
-sqlite3 ${DB_PATH} < ${PROJECT_DIR}/dtest_data/data.sql
+sqlite3 ${DB_PATH} < ${PROJECT_DIR}/test_data/data.sql
 '''
+dependencies = ["setup_db"]
+
+[tasks.run]
+command = "cargo"
+args = ["run"]

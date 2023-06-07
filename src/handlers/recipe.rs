@@ -454,6 +454,34 @@ pub async fn delete_delete_recipe(
         if recipe.author != current_user.id {
             Redirect::to("/").into_response()
         } else {
+            let cookbooks = Cookbook::query_by_recipe(&recipe_id)
+                .await
+                .unwrap_or(vec![]);
+            let items = Ingredient::query_by_recipe(&recipe_id)
+                .await
+                .unwrap_or(vec![])
+                .into_iter()
+                .map(|ingredient| async move {
+                    let item = Item::query_by_id(&ingredient.item).await.unwrap().unwrap();
+                    (ingredient, item)
+                })
+                .collect::<futures::stream::FuturesOrdered<_>>()
+                .collect::<Vec<_>>()
+                .await;
+            let steps = Step::query_by_recipe(&recipe_id).await.unwrap_or(vec![]);
+
+            for cookbook in cookbooks {
+                cookbook.remove_recipe(&recipe).await.unwrap();
+            }
+
+            for (_ingredient, item) in items {
+                item.delete().await.unwrap();
+            }
+
+            for step in steps {
+                step.delete().await.unwrap();
+            }
+
             recipe.delete().await.unwrap();
 
             let response = RecipeResponse {

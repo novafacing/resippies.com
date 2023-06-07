@@ -1,6 +1,6 @@
 {% extends "/base" %}
 {% block title %}
-Identity
+Delete Recipe
 {% endblock title %}
 {% block head %}
 {{ super()}}
@@ -8,7 +8,7 @@ Identity
     document.addEventListener('DOMContentLoaded', () => {
         const deleteRecipe = document.querySelector('#delete-recipe');
         deleteRecipe.addEventListener('click', () => {
-            fetch(`/delete_recipe/{{ recipe.id }}`, {
+            fetch(`/delete_recipe/{{ response.recipe.id }}`, {
                 method: 'DELETE'
             })
                 .then(response => response.json())
@@ -16,15 +16,15 @@ Identity
                     // Print result
                     console.log(result);
                 });
+            window.location.replace("/");
         });
     });
 </script>
 {% endblock head %}
 {% block content %}
-
-Are you <b>sure</b> you would like to delete {{ recipe.name }}?
-
 <div class="center-button">
+    <p>Are you <b>sure</b> you would like to delete {{ response.recipe.name }}?</p>
+    <br>
     <button id="delete-recipe" onclick="">Delete It!</button>
 </div>
 {% endblock content %}

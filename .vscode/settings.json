@@ -1,0 +1,11 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 100,
+            "driver": "SQLite",
+            "name": "Resippies",
+            "database": "${workspaceFolder:resippies.com}/db/resippies.com.sqlite"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
+}

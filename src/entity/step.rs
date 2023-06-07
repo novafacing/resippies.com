@@ -52,13 +52,8 @@ impl Step {
         WHERE id = ?;
         "#;
 
-    // Query to remove all steps from a recipe and remove all the entries in recipes_steps for the recipe
-    pub const QUERY_DELETE_STEPS_BY_RECIPE: &str = r#"
-        DELETE FROM steps
-        WHERE id IN (
-            SELECT step FROM recipes_steps WHERE recipe = ?
-        );
-        DELETE FROM recipes_steps WHERE recipe = ?;
+    pub const QUERY_DELETE_STEP_BY_ID: &str = r#"
+        DELETE FROM steps WHERE id = ?;
         "#;
 }
 
@@ -114,11 +109,10 @@ impl Step {
         Ok(())
     }
 
-    pub async fn delete_by_recipe(recipe: &Recipe) -> Result<()> {
+    pub async fn delete(&self) -> Result<()> {
         let mut conn = connection().await?;
-        sqlx::query(Step::QUERY_DELETE_STEPS_BY_RECIPE)
-            .bind(&recipe.id)
-            .bind(&recipe.id)
+        sqlx::query(Step::QUERY_DELETE_STEP_BY_ID)
+            .bind(&self.id)
             .execute(&mut conn)
             .await?;
 
