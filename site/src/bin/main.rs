@@ -14,7 +14,6 @@ use resippies::{
     routes::*,
     secret::secret,
     state::AppState,
-    templates::init_templates,
 };
 use sea_orm::ConnectionTrait;
 use sqlx::SqlitePool;
@@ -30,7 +29,7 @@ use uuid::Uuid;
 async fn main() -> Result<()> {
     registry()
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-            "tower_http=debug,axum_template=debug,tera=debug,sqlx=debug,
+            "tower_http=debug,axum_template=debug,sqlx=debug,
             axum_session=debug,axum_session_auth=debug,sea_orm=debug,sea_query=debug,
             service=trace,entities=trace,resippies=trace,util=trace"
                 .into()
@@ -58,8 +57,7 @@ async fn main() -> Result<()> {
     // let user_store = AuthStore::new(&db);
     // let user_store = AuthStore::new(&db);
 
-    let tera = init_templates().await?;
-    let state = AppState::new(tera, db);
+    let state = AppState::new(db);
 
     let app = Router::new()
         .route("/", get(index::redirect_to))
