@@ -9,6 +9,7 @@ fn main() {
     let manifest_dir = PathBuf::from(CARGO_MANIFEST_DIR);
 
     if !Command::new(manifest_dir.join("binaries/tailwindcss-linux-x64"))
+        .arg("-m")
         .arg("-i")
         .arg(manifest_dir.join("static/input.css"))
         .arg("-o")

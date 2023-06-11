@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use crate::auth::AuthSessionContex;
-use crate::layout::Layout;
+use crate::pages::layout::Layout;
 use crate::state::AppState;
 use axum::extract::State;
 use axum::response::Html;
@@ -11,36 +11,19 @@ use sea_orm::DatabaseConnection;
 use tailwind_rs::CLIConfig;
 use tailwind_rs::CssInlineMode;
 use tailwind_rs::TailwindBuilder;
+use tracing::debug;
+use tracing::info;
 use tracing::trace;
 
 pub async fn get(// auth: AuthSessionContex,
 ) -> impl IntoResponse {
     trace!("index::get");
     let mut render_response = Layout {
+        dark: false,
         head: markup::new! {
             title { "Hello, world!" }
         },
-        style: markup::new! {},
         main: markup::new! {},
-    };
-
-    let config = CLIConfig {
-        minify: true,
-        mode: CssInlineMode::Inline,
-        obfuscate: false,
-
-        ..Default::default()
-    };
-    let mut builder = config.builder();
-
-    let (_html, css) = config
-        .compile_html(&render_response.to_string(), &mut builder)
-        .expect("Failed to compile HTML");
-
-    render_response.style = markup::new! {
-        style {
-            @markup::raw(&css)
-        }
     };
 
     Html(render_response.to_string())

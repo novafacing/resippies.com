@@ -40,6 +40,7 @@ fn main() {
 '''
 
 [tasks.setup-db]
+workspace = false
 script_runner = '@shell'
 script = '''
 if [ ! -f "${DB_PATH}" ]; then
@@ -48,6 +49,7 @@ fi
 '''
 
 [tasks.migrate-db]
+workspace = false
 command = "cargo"
 args = ["run", "--manifest-path", "${PROJECT_DIR}/migration/Cargo.toml", "up"]
 dependencies = ["setup-env", "setup-db"]
