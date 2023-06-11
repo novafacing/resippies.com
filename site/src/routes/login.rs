@@ -27,8 +27,8 @@ define! {
     }
     LoginForm<'a, R>(data: &'a R) where R: RenderData {
         div
-        .flex
-        ."flex-col"
+        ."flex-auto"
+        ."md:w-1/2"
         ."items-center"
         ."justify-center"
         ."px-6"
@@ -37,17 +37,100 @@ define! {
         {
             div
             ."w-full"
-            ."rounded-lg"
-            .shadow
+            ."rounded"
+            ."border"
             ."border-foreground-light-500"
+            ."bg-background-light-100"
             ."p-6"
             ."space-y-4" {
-                form[action="/login", method="post"] {
-                    label[for = "username"] { "Username:" }
-                    input #username[name = "username", type = "text", placeholder = "username"] {}
-                    label[for = "password"] { "Password:" }
-                    input #password[name = "password", type = "password", placeholder = "password"] {}
-                    button["hx-post" = "/login", "hx-trigger"="click", "hx-target"="#login", "hx-swap"="outerHTML"] { "Login" }
+                h1
+                ."text-xl"
+                ."font-semibold"
+                ."leading-tight"
+                ."tracing-tight"
+                ."text-center" {
+                    "Log In"
+                }
+                form
+                ."space-y-4"
+                [action="/login", method="post"] {
+                    div {
+                        label
+                        .block
+                        ."mb-2"
+                        ."text-sm"
+                        ."font-medium"
+                        [for = "username"] {
+                            "Username:"
+                        }
+                        input
+                        ."p-2.5"
+                        .block
+                        .rounded
+                        ."w-full"
+                        .border
+                        ."border-foreground-light-500"
+                        #username
+                        [name = "username", type = "text", placeholder = "username"] {
+
+                        }
+                    }
+                    div {
+                        label
+                        .block
+                        ."mb-2"
+                        ."text-sm"
+                        ."font-medium"
+                        [for = "email"] {
+                            "Email:"
+                        }
+                        input
+                        ."p-2.5"
+                        .block
+                        .rounded
+                        ."w-full"
+                        .border
+                        ."border-foreground-light-500"
+                        #email
+                        [name = "email", type = "email", placeholder = "you@example.com"] {
+
+                        }
+                    }
+                    div {
+                        label
+                        .block
+                        ."mb-2"
+                        ."text-sm"
+                        ."font-medium"
+                        [for = "password"] {
+                            "Password:"
+                        }
+                        input
+                        ."p-2.5"
+                        .block
+                        .rounded
+                        ."w-full"
+                        .border
+                        ."border-foreground-light-500"
+                        #password
+                        [name = "password", type = "password", placeholder = "••••••••••••"] {
+
+                        }
+
+                    }
+                    button
+                    ."w-full"
+                    ."rounded"
+                    ."border"
+                    ."border-foreground-light-500"
+                    ."font-medium"
+                    ."text-center"
+                    ."px-5"
+                    ."py-2.5"
+                    ."text-sm"
+                    ."hover:bg-foreground-light-500"
+                    ."hover:text-background-light-100"
+                    [type = "submit"] { "Login" }
                 }
             }
         }

@@ -21,7 +21,9 @@ define! {
                 div
                 .flex {
                     @Sidebar { data }
-                    main {
+                    main
+                    ."flex-auto"
+                    ."bg-background-light-500" {
                         @main
                     }
                 }
@@ -36,7 +38,7 @@ define! {
         ."h-screen"
         .sticky
         ."top-0"
-        ."bg-background-light-100"
+        ."bg-background-light-200"
         ."text-foreground-light-500"
         ["aria-label" = "sidenav"] {
             div
@@ -50,7 +52,7 @@ define! {
                 ul
                 ."font-normal"
                 ."divide-y"
-                ."divide-foreground-light-100" {
+                ."divide-foreground-light-500" {
                     @if let Some(user) = data.user() {
                         li {
                             a
@@ -90,7 +92,7 @@ define! {
                             ."hover:border-foreground-light-500"
                             .group
                             [href="/login"] {
-                                "Login"
+                                "Log In"
                             }
                         }
                         li {
