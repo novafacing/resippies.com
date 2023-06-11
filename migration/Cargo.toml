@@ -9,6 +9,7 @@ name = "migration"
 path = "src/lib.rs"
 
 [dependencies]
+axum_session = { version = "0.2.3", features = ["sqlite-rustls"] }
 entities = { workspace = true }
 sea-orm-migration = { workspace = true, features = [
     "runtime-tokio-rustls",

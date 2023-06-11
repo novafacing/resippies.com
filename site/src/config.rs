@@ -4,6 +4,6 @@ pub const ADDRESS: &str = "127.0.0.1";
 pub const PORT: u16 = 8000;
 
 #[cfg(not(debug_assertions))]
-pub const ADDRESS: &str = "0.0.0.0";
+pub const ADDRESS: &str = "127.0.0.1";
 #[cfg(not(debug_assertions))]
-pub const PORT: u16 = 80;
+pub const PORT: u16 = 8000;

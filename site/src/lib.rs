@@ -1,8 +1,10 @@
 pub mod auth;
+pub mod components;
 pub mod config;
 pub mod db;
-pub mod pages;
+pub mod error;
 pub mod render;
 pub mod routes;
 pub mod secret;
 pub mod state;
+pub mod traits;

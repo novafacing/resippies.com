@@ -6,7 +6,6 @@ use axum_session_auth::AuthSession;
 use entities::user::Model as UserModel;
 use entities::Id;
 use sea_orm::DatabaseConnection;
-use service::UserStore;
 use sqlx::SqlitePool;
 use uuid::Uuid;
 

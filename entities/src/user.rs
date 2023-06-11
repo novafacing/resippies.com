@@ -7,6 +7,7 @@ use chrono::Utc;
 use sea_orm::{entity::prelude::*, Set, SqlxSqliteConnector};
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
+use tracing::debug;
 use util::{code, uuid};
 
 use crate::{role::Role, Id};
@@ -79,12 +80,28 @@ impl ActiveModelBehavior for ActiveModel {
     }
 }
 
+impl ActiveModel {
+    pub fn anonymous() -> Self {
+        let mut active_model: ActiveModel = Default::default();
+        active_model.id = Set(Id::from(Uuid::nil()));
+        active_model.username = Set("Anonymous".to_owned());
+        active_model.email = Set("".to_owned());
+        active_model.password_hash = Set("".to_owned());
+        active_model.code = Set("".to_owned());
+        active_model.verified = Set(true);
+        active_model.role = Set(Role::Anonymous);
+        active_model
+    }
+}
+
 #[async_trait]
 impl HasPermission<SqlitePool> for Model {
     async fn has(&self, perm: &str, _pool: &Option<&SqlitePool>) -> bool {
+        debug!("Checking if user has permission {}", perm);
         match &perm[..] {
             // "Token::UseAdmin" => true,
-            _ => false,
+            // We aren't using permissions yet, so all users have all permissions
+            _ => true,
         }
     }
 }
@@ -92,6 +109,7 @@ impl HasPermission<SqlitePool> for Model {
 #[async_trait]
 impl Authentication<Model, Id, SqlitePool> for Model {
     async fn load_user(id: Id, pool: Option<&SqlitePool>) -> Result<Self> {
+        debug!("Loading user with id {}", id);
         if let Some(pool) = pool {
             let pool = pool.clone();
             let db = SqlxSqliteConnector::from_sqlx_sqlite_pool(pool);
@@ -105,14 +123,42 @@ impl Authentication<Model, Id, SqlitePool> for Model {
     }
 
     fn is_authenticated(&self) -> bool {
-        true
+        debug!("Checking if authenticated");
+        self.role != Role::Anonymous
     }
 
     fn is_active(&self) -> bool {
-        self.verified
+        debug!("Checking if active");
+        self.role != Role::Anonymous
     }
 
     fn is_anonymous(&self) -> bool {
-        false
+        debug!("Checking if anonymous");
+        self.role == Role::Anonymous
+    }
+}
+
+impl Model {
+    pub fn display(&self, public: bool) -> Self {
+        if public {
+            Self {
+                // When displaying publicly we don't want to show anything but the username
+                // id and creation time
+                password_hash: "".to_owned(),
+                code: "".to_owned(),
+                email: "".to_owned(),
+                verified: false,
+                updated_at: DateTimeUtc::default(),
+                ..self.clone()
+            }
+        } else {
+            Self {
+                // We won't show the password hash even to the logged in user in case of
+                // cookie jacking or something, and we can't show them their code, of course
+                password_hash: "".to_owned(),
+                code: "".to_owned(),
+                ..self.clone()
+            }
+        }
     }
 }

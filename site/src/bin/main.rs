@@ -29,10 +29,12 @@ use uuid::Uuid;
 async fn main() -> Result<()> {
     registry()
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-            "tower_http=debug,axum_template=debug,sqlx=debug,
-            axum_session=debug,axum_session_auth=debug,sea_orm=debug,sea_query=debug,
-            service=trace,entities=trace,resippies=trace,util=trace"
-                .into()
+            concat!(
+                "tower_http=debug,axum_template=debug,sqlx=debug,axum_session=debug,",
+                "axum_session_auth=debug,sea_orm=debug,sea_query=debug,service=trace,",
+                "entities=trace,resippies=trace,util=trace"
+            )
+            .into()
         }))
         .with(layer())
         .init();
@@ -42,11 +44,9 @@ async fn main() -> Result<()> {
 
     // let session_store = DatabaseSessionStore::new(db.clone());
     let session_config = SessionConfig::default().with_table_name("sessions");
-    let auth_config = AuthConfig::<Id>::default().set_cache(true);
-    let session_store = SessionStore::<SessionSqlitePool>::new(
-        Some(SessionSqlitePool::from(sessions_pool.clone())),
-        session_config,
-    );
+    let auth_config = AuthConfig::<Id>::default().with_anonymous_user_id(Some(Uuid::nil()));
+    let session_store =
+        SessionStore::<SessionSqlitePool>::new(Some(sessions_pool.clone().into()), session_config);
     session_store.initiate().await?;
 
     let session_layer = SessionLayer::new(session_store);
@@ -61,9 +61,11 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .route("/", get(index::redirect_to))
+        .route("/login", get(login::get))
         .route("/index", get(index::get))
-        // .layer(session_layer)
-        // .layer(auth_session_layer)
+        // NOTE: Order *matters*. This must be Auth, *then* Session layer.
+        .layer(auth_session_layer)
+        .layer(session_layer)
         .layer(TraceLayer::new_for_http())
         .with_state(state)
         .nest_service(

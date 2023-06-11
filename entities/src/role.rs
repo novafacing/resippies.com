@@ -18,6 +18,8 @@ use serde::{Deserialize, Serialize};
 pub enum Role {
     #[sea_orm(num_value = 0)]
     User,
+    #[sea_orm(num_value = 1)]
+    Anonymous,
 }
 
 impl Default for Role {
