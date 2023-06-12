@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
+    plugins: [require("./binaries/plugins/forms/index.js")],
     content: ["./src/routes/*.rs", "./src/components/*.rs"],
     theme: {
         extend: {

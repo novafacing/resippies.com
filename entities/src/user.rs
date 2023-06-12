@@ -8,9 +8,9 @@ use sea_orm::{entity::prelude::*, Set, SqlxSqliteConnector};
 use serde::{Deserialize, Serialize};
 use sqlx::SqlitePool;
 use tracing::debug;
-use util::{code, uuid};
+use util::{code, hash_password, uuid};
 
-use crate::{role::Role, Id};
+use crate::{prelude::Theme, role::Role, Id};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "user")]
@@ -24,6 +24,7 @@ pub struct Model {
     pub code: String,
     pub verified: bool,
     pub role: Role,
+    pub theme: Theme,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }
@@ -61,6 +62,8 @@ impl ActiveModelBehavior for ActiveModel {
             id: Set(uuid()),
             code: Set(code()),
             verified: Set(false),
+            role: Set(Role::default()),
+            theme: Set(Theme::default()),
             ..ActiveModelTrait::default()
         }
     }
@@ -82,15 +85,17 @@ impl ActiveModelBehavior for ActiveModel {
 
 impl ActiveModel {
     pub fn anonymous() -> Self {
-        let mut active_model: ActiveModel = Default::default();
-        active_model.id = Set(Id::from(Uuid::nil()));
-        active_model.username = Set("Anonymous".to_owned());
-        active_model.email = Set("".to_owned());
-        active_model.password_hash = Set("".to_owned());
-        active_model.code = Set("".to_owned());
-        active_model.verified = Set(true);
-        active_model.role = Set(Role::Anonymous);
-        active_model
+        ActiveModel {
+            id: Set(Id::from(Uuid::nil())),
+            username: Set("Anonymous".to_owned()),
+            email: Set("".to_owned()),
+            password_hash: Set("".to_owned()),
+            code: Set("".to_owned()),
+            verified: Set(true),
+            role: Set(Role::Anonymous),
+            theme: Set(Theme::default()),
+            ..Default::default()
+        }
     }
 }
 

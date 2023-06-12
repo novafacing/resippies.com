@@ -12,6 +12,7 @@ pub mod recipe;
 pub mod recipe_contributor;
 pub mod role;
 pub mod step;
+pub mod theme;
 pub mod user;
 pub mod visibility;
 

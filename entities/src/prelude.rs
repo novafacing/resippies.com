@@ -6,5 +6,7 @@ pub use super::cookbook_recipe::Entity as CookbookRecipe;
 pub use super::ingredient::Entity as Ingredient;
 pub use super::recipe::Entity as Recipe;
 pub use super::recipe_contributor::Entity as RecipeContributor;
+pub use super::role::Role;
 pub use super::step::Entity as Step;
+pub use super::theme::Theme;
 pub use super::user::Entity as User;

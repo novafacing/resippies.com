@@ -1,5 +1,5 @@
 [workspace]
-members = ["site", "entities", "util", "migration", "service"]
+members = ["site", "entities", "util", "migration"]
 
 [workspace.dependencies]
 entities = { path = "./entities" }

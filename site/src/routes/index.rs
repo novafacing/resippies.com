@@ -9,7 +9,7 @@ use axum::response::Html;
 use axum::response::IntoResponse;
 use axum::response::Redirect;
 use derive_builder::Builder;
-use entities::user::Model as UserModel;
+use entities::{theme::Theme, user::Model as UserModel};
 use markup::{define, new};
 use tracing::trace;
 
@@ -21,6 +21,10 @@ pub struct IndexData {
 impl RenderData for IndexData {
     fn user(&self) -> Option<UserModel> {
         self.auth.user()
+    }
+
+    fn theme(&self) -> Theme {
+        self.auth.user().map(|u| u.theme).unwrap_or_default()
     }
 }
 

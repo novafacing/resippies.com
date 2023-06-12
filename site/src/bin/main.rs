@@ -61,8 +61,10 @@ async fn main() -> Result<()> {
 
     let app = Router::new()
         .route("/", get(index::redirect_to))
-        .route("/login", get(login::get))
+        .route("/login", get(login::get).post(login::post))
+        .route("/register", get(register::get).post(register::post))
         .route("/index", get(index::get))
+        .route("/logout", get(logout::get).post(logout::post))
         // NOTE: Order *matters*. This must be Auth, *then* Session layer.
         .layer(auth_session_layer)
         .layer(session_layer)
